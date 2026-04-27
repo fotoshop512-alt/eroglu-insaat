@@ -1,0 +1,667 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Eroğlu İnşaat | Premium Yapı & Mimarlık</title>
+  <meta name="description" content="Eroğlu İnşaat — Türkiye'nin lider inşaat şirketi. Konut, ticari ve endüstriyel projeler. Kalite, güven ve yenilikçi mimari ile geleceği inşa ediyoruz.">
+  <link rel="stylesheet" href="style.css">
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🏗️</text></svg>">
+</head>
+<body>
+
+  <!-- Cursor Glow -->
+  <div class="cursor-glow" id="cursorGlow"></div>
+
+  <!-- Preloader -->
+  <div class="preloader" id="preloader">
+    <div class="preloader-content">
+      <div class="preloader-logo">EROĞLU</div>
+      <div class="preloader-bar-track">
+        <div class="preloader-bar"></div>
+      </div>
+      <div class="preloader-text">Mükemmellik inşa ediliyor...</div>
+    </div>
+  </div>
+
+  <!-- Navigation -->
+  <nav class="navbar" id="navbar">
+    <div class="container nav-inner">
+      <a href="#hero" class="nav-logo">
+        <div class="nav-logo-icon">
+          <svg viewBox="0 0 50 50" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M25 2L45 15V38L25 48L5 38V15L25 2Z" stroke="url(#logoGrad)" stroke-width="1.5" fill="none"/>
+            <path d="M25 10L38 18V34L25 42L12 34V18L25 10Z" stroke="url(#logoGrad2)" stroke-width="1" fill="none" opacity="0.5"/>
+            <path d="M25 18L32 22V30L25 34L18 30V22L25 18Z" fill="url(#logoGrad)" opacity="0.3"/>
+            <defs>
+              <linearGradient id="logoGrad" x1="5" y1="2" x2="45" y2="48">
+                <stop offset="0%" stop-color="#f0d48a"/>
+                <stop offset="100%" stop-color="#d4a853"/>
+              </linearGradient>
+              <linearGradient id="logoGrad2" x1="12" y1="10" x2="38" y2="42">
+                <stop offset="0%" stop-color="#00e5ff"/>
+                <stop offset="100%" stop-color="#d4a853"/>
+              </linearGradient>
+            </defs>
+          </svg>
+        </div>
+        <div>
+          <span class="nav-logo-text">Eroğlu</span>
+          <span class="nav-logo-sub">İnşaat & Mimarlık</span>
+        </div>
+      </a>
+
+      <ul class="nav-links" id="navLinks">
+        <li><a href="#about" class="nav-link">Hakkımızda</a></li>
+        <li><a href="#building-showcase" class="nav-link">3D Görünüm</a></li>
+        <li><a href="#services" class="nav-link">Hizmetler</a></li>
+        <li><a href="#projects" class="nav-link">Projeler</a></li>
+        <li><a href="#testimonials" class="nav-link">Referanslar</a></li>
+        <li><a href="#contact" class="nav-cta">İletişim</a></li>
+      </ul>
+
+      <div class="hamburger" id="hamburger">
+        <span></span>
+        <span></span>
+        <span></span>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Mobile Menu -->
+  <div class="mobile-menu-overlay" id="mobileMenu">
+    <a href="#about" class="nav-link" onclick="closeMobileMenu()">Hakkımızda</a>
+    <a href="#building-showcase" class="nav-link" onclick="closeMobileMenu()">3D Görünüm</a>
+    <a href="#services" class="nav-link" onclick="closeMobileMenu()">Hizmetler</a>
+    <a href="#projects" class="nav-link" onclick="closeMobileMenu()">Projeler</a>
+    <a href="#testimonials" class="nav-link" onclick="closeMobileMenu()">Referanslar</a>
+    <a href="#contact" class="nav-link" onclick="closeMobileMenu()">İletişim</a>
+  </div>
+
+  <!-- ═══════════ HERO ═══════════ -->
+  <section class="hero" id="hero">
+    <div class="hero-bg">
+      <img src="assets/images/skyline1.jpg" alt="Eroğlu Skyline - Modern Çok Katlı Konut Projesi" loading="eager">
+      <div class="hero-bg-overlay"></div>
+    </div>
+    <div class="hero-particles" id="heroParticles"></div>
+
+    <div class="container">
+      <div class="hero-content">
+        <div class="hero-badge">
+          <span class="hero-badge-dot"></span>
+          2005'ten Beri Güvenle İnşa Ediyoruz
+        </div>
+        <h1 class="hero-title">
+          <span class="hero-title-line">Geleceğin</span>
+          <span class="hero-title-line"><span class="highlight" data-text="Mimarisini">Mimarisini</span></span>
+          <span class="hero-title-line">İnşa Ediyoruz</span>
+        </h1>
+        <p class="hero-subtitle">
+          Kalite, güven ve yenilikçi tasarım anlayışıyla yaşam alanlarınızı
+          kusursuz bir şekilde inşa ediyoruz. Her projemizde mükemmelliği hedefliyoruz.
+        </p>
+        <div class="hero-actions">
+          <a href="#projects" class="btn-primary">
+            Projelerimiz
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+          </a>
+          <a href="#contact" class="btn-glass">
+            Teklif Alın
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <div class="hero-stats">
+      <div class="hero-stat">
+        <div class="hero-stat-number" data-count="250">0</div>
+        <div class="hero-stat-label">Tamamlanan Proje</div>
+      </div>
+      <div class="hero-stat">
+        <div class="hero-stat-number" data-count="20">0</div>
+        <div class="hero-stat-label">Yıllık Deneyim</div>
+      </div>
+      <div class="hero-stat">
+        <div class="hero-stat-number" data-count="98">0</div>
+        <div class="hero-stat-label">Müşteri Memnuniyeti %</div>
+      </div>
+    </div>
+
+    <div class="scroll-indicator">
+      <span>Keşfet</span>
+      <div class="scroll-line"></div>
+    </div>
+  </section>
+
+  <!-- ═══════════ ABOUT ═══════════ -->
+  <section class="section" id="about">
+    <div class="bg-grid"></div>
+    <div class="bg-gradient-orb gold" style="top:-200px;right:-200px"></div>
+    <div class="container">
+      <div class="about-grid">
+        <div class="about-image-wrapper reveal-left">
+          <div class="about-image">
+            <img src="assets/images/skyline_detail2.jpg" alt="Eroğlu Skyline Detay Görünüm">
+          </div>
+          <div class="about-experience-badge">
+            <span class="number">20+</span>
+            <span class="label">Yıl Tecrübe</span>
+          </div>
+        </div>
+        <div class="about-content reveal-right">
+          <div class="about-tag">─── Hakkımızda</div>
+          <h2 class="about-title">Güvenin ve Kalitenin<br>Adresi</h2>
+          <p class="about-text">
+            Eroğlu İnşaat olarak 2005 yılından bu yana, konut, ticari ve endüstriyel
+            alanda üstlendiğimiz projelerle sektörde öncü konumdayız. Yenilikçi mimari
+            anlayışımız, sürdürülebilir yapı yaklaşımımız ve müşteri memnuniyetine verdiğimiz
+            önem ile fark yaratıyoruz.
+          </p>
+          <div class="about-features">
+            <div class="about-feature">
+              <div class="about-feature-icon">🏗️</div>
+              <span>Modern Yapı Teknolojileri</span>
+            </div>
+            <div class="about-feature">
+              <div class="about-feature-icon">🌿</div>
+              <span>Sürdürülebilir Tasarım</span>
+            </div>
+            <div class="about-feature">
+              <div class="about-feature-icon">🏆</div>
+              <span>Ödüllü Projeler</span>
+            </div>
+            <div class="about-feature">
+              <div class="about-feature-icon">🤝</div>
+              <span>Güvenilir İş Ortağı</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════ 3D BUILDING SHOWCASE ═══════════ -->
+  <section class="building-showcase" id="building-showcase">
+    <div class="bg-grid"></div>
+    <div class="bg-gradient-orb cyan" style="top:20%;left:-200px"></div>
+    <div class="bg-gradient-orb gold" style="bottom:-100px;right:-200px"></div>
+    <div class="container">
+      <div class="building-showcase-inner">
+        <div class="building-3d-wrapper">
+          <div class="building-3d" id="building3d">
+            <!-- Floors generated by JS -->
+            <div class="building-ground"></div>
+          </div>
+        </div>
+        <div class="building-content reveal-right">
+          <div class="building-tag">Eroğlu Skyline</div>
+          <h2 class="building-title">Eroğlu Skyline'ı<br>Keşfedin</h2>
+          <p class="building-text">
+            Eroğlu Skyline, modern mimari anlayışla tasarlanmış çok katlı konut projemizdir.
+            Geniş balkonları, akıllı bina teknolojisi ve A++ enerji sınıfı ile
+            konforlu yaşam alanları sunuyoruz. 3D modelimiz ile yapıyı keşfedin.
+          </p>
+
+          <!-- Skyline Image Gallery -->
+          <div class="showcase-gallery" id="showcaseGallery">
+            <div class="showcase-main-image">
+              <img src="assets/images/skyline1.jpg" alt="Eroğlu Skyline Ön Görünüm" id="showcaseMainImg">
+            </div>
+            <div class="showcase-thumbs">
+              <div class="showcase-thumb active" onclick="changeShowcaseImg(this, 'assets/images/skyline1.jpg')">
+                <img src="assets/images/skyline1.jpg" alt="Skyline Açı 1">
+              </div>
+              <div class="showcase-thumb" onclick="changeShowcaseImg(this, 'assets/images/skyline2.jpg')">
+                <img src="assets/images/skyline2.jpg" alt="Skyline Açı 2">
+              </div>
+              <div class="showcase-thumb" onclick="changeShowcaseImg(this, 'assets/images/skyline3.jpg')">
+                <img src="assets/images/skyline3.jpg" alt="Skyline Açı 3">
+              </div>
+              <div class="showcase-thumb" onclick="changeShowcaseImg(this, 'assets/images/skyline4.jpg')">
+                <img src="assets/images/skyline4.jpg" alt="Skyline Açı 4">
+              </div>
+              <div class="showcase-thumb" onclick="changeShowcaseImg(this, 'assets/images/skyline_top.jpg')">
+                <img src="assets/images/skyline_top.jpg" alt="Skyline Üst Görünüm">
+              </div>
+            </div>
+          </div>
+
+          <div class="building-features">
+            <div class="building-feature">
+              <div class="building-feature-icon">🏢</div>
+              <span>Çok Katlı Akıllı Bina</span>
+            </div>
+            <div class="building-feature">
+              <div class="building-feature-icon">⚡</div>
+              <span>A++ Enerji Sınıfı</span>
+            </div>
+            <div class="building-feature">
+              <div class="building-feature-icon">🛡️</div>
+              <span>Deprem İzolatörü Sistemi</span>
+            </div>
+          </div>
+          <button class="explode-btn" id="explodeBtn" onclick="toggleExplode()">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg>
+            3D Exploded View
+          </button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════ SERVICES ═══════════ -->
+  <section class="section services" id="services">
+    <div class="bg-gradient-orb cyan" style="bottom:-200px;left:-200px"></div>
+    <div class="container">
+      <div class="section-header reveal">
+        <div class="section-tag">Hizmetlerimiz</div>
+        <h2 class="section-title">Kapsamlı İnşaat<br>Çözümleri</h2>
+        <p class="section-desc">
+          Projelerinizin başından sonuna kadar yanınızdayız.
+          Her aşamada kalite ve profesyonellik garantisi sunuyoruz.
+        </p>
+      </div>
+      <div class="services-grid">
+        <div class="service-card reveal" style="transition-delay:0.05s">
+          <div class="service-card-glow"></div>
+          <div class="service-icon">🏠</div>
+          <h3 class="service-title">Konut Projeleri</h3>
+          <p class="service-desc">Modern mimari ile tasarlanmış, konforlu ve estetik konut projeleri. Villadan rezidansa her ölçekte çözüm.</p>
+          <a href="#contact" class="service-link">Detaylı Bilgi <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a>
+        </div>
+        <div class="service-card reveal" style="transition-delay:0.15s">
+          <div class="service-card-glow"></div>
+          <div class="service-icon">🏢</div>
+          <h3 class="service-title">Ticari Yapılar</h3>
+          <p class="service-desc">İş merkezleri, plaza ve AVM projeleri. Fonksiyonel tasarım ve üstün yapı kalitesi ile ticari değer.</p>
+          <a href="#contact" class="service-link">Detaylı Bilgi <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a>
+        </div>
+        <div class="service-card reveal" style="transition-delay:0.25s">
+          <div class="service-card-glow"></div>
+          <div class="service-icon">🏗️</div>
+          <h3 class="service-title">Altyapı & Üstyapı</h3>
+          <p class="service-desc">Yol, köprü, tünel ve her türlü altyapı projesi. Mühendislik gücümüzle en zorlu projeleri hayata geçiriyoruz.</p>
+          <a href="#contact" class="service-link">Detaylı Bilgi <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a>
+        </div>
+        <div class="service-card reveal" style="transition-delay:0.35s">
+          <div class="service-card-glow"></div>
+          <div class="service-icon">📐</div>
+          <h3 class="service-title">Mimari Tasarım</h3>
+          <p class="service-desc">Yenilikçi ve sürdürülebilir mimari tasarım. Hayalinizdeki mekanları kağıttan gerçeğe dönüştürüyoruz.</p>
+          <a href="#contact" class="service-link">Detaylı Bilgi <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a>
+        </div>
+        <div class="service-card reveal" style="transition-delay:0.45s">
+          <div class="service-card-glow"></div>
+          <div class="service-icon">🔧</div>
+          <h3 class="service-title">Restorasyon</h3>
+          <p class="service-desc">Tarihi ve kültürel yapıların özgün dokusunu koruyarak yeniliyoruz. Uzman ekibimizle değerli yapılara yeni hayat veriyoruz.</p>
+          <a href="#contact" class="service-link">Detaylı Bilgi <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a>
+        </div>
+        <div class="service-card reveal" style="transition-delay:0.55s">
+          <div class="service-card-glow"></div>
+          <div class="service-icon">🏡</div>
+          <h3 class="service-title">İç Mimarlık</h3>
+          <p class="service-desc">Yaşam alanlarınızı yeniden tasarlıyoruz. Modern, konforlu ve estetik iç mekan çözümleri.</p>
+          <a href="#contact" class="service-link">Detaylı Bilgi <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════ PROJECTS ═══════════ -->
+  <section class="section" id="projects">
+    <div class="bg-grid"></div>
+    <div class="bg-gradient-orb gold" style="top:10%;left:-300px"></div>
+    <div class="container">
+      <div class="section-header reveal">
+        <div class="section-tag">Projelerimiz</div>
+        <h2 class="section-title">Öne Çıkan<br>Projelerimiz</h2>
+        <p class="section-desc">Her biri titizlikle tasarlanmış projelerimiz, kalite anlayışımızın en güçlü kanıtıdır.</p>
+      </div>
+
+      <!-- ── Eroğlu Skyline ── -->
+      <div class="project-section-title reveal"><span>01</span> Eroğlu Skyline — Çok Katlı Konut</div>
+      <div class="projects-grid">
+        <div class="project-card featured reveal">
+          <img src="assets/images/skyline1.jpg" alt="Eroğlu Skyline Ön Görünüm">
+          <div class="project-overlay">
+            <span class="project-category">Çok Katlı Konut</span>
+            <h3 class="project-name">Eroğlu Skyline</h3>
+            <p class="project-location"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg> Ön Cephe</p>
+          </div>
+          <div class="project-card-border"></div>
+        </div>
+        <div class="project-card reveal" style="transition-delay:0.1s">
+          <img src="assets/images/skyline2.jpg" alt="Eroğlu Skyline Açı 2">
+          <div class="project-overlay">
+            <span class="project-category">Eroğlu Skyline</span>
+            <h3 class="project-name">Perspektif Görünüm</h3>
+            <p class="project-location"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg> Dış Cephe</p>
+          </div>
+          <div class="project-card-border"></div>
+        </div>
+        <div class="project-card reveal" style="transition-delay:0.2s">
+          <img src="assets/images/skyline3.jpg" alt="Eroğlu Skyline Açı 3">
+          <div class="project-overlay">
+            <span class="project-category">Eroğlu Skyline</span>
+            <h3 class="project-name">Yan Cephe</h3>
+            <p class="project-location"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg> Dış Cephe</p>
+          </div>
+          <div class="project-card-border"></div>
+        </div>
+        <div class="project-card reveal" style="transition-delay:0.1s">
+          <img src="assets/images/skyline4.jpg" alt="Eroğlu Skyline Açı 4">
+          <div class="project-overlay">
+            <span class="project-category">Eroğlu Skyline</span>
+            <h3 class="project-name">Arka Cephe</h3>
+            <p class="project-location"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg> Dış Cephe</p>
+          </div>
+          <div class="project-card-border"></div>
+        </div>
+        <div class="project-card reveal" style="transition-delay:0.2s">
+          <img src="assets/images/skyline5.jpg" alt="Eroğlu Skyline Açı 5">
+          <div class="project-overlay">
+            <span class="project-category">Eroğlu Skyline</span>
+            <h3 class="project-name">Genel Görünüm</h3>
+            <p class="project-location"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg> Dış Cephe</p>
+          </div>
+          <div class="project-card-border"></div>
+        </div>
+        <div class="project-card featured reveal" style="transition-delay:0.1s">
+          <img src="assets/images/skyline_top.jpg" alt="Eroğlu Skyline Kuşbakışı">
+          <div class="project-overlay">
+            <span class="project-category">Eroğlu Skyline</span>
+            <h3 class="project-name">Kuşbakışı Görünüm</h3>
+            <p class="project-location"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg> Otopark &amp; Peyzaj</p>
+          </div>
+          <div class="project-card-border"></div>
+        </div>
+        <div class="project-card reveal" style="transition-delay:0.2s">
+          <img src="assets/images/skyline_detail1.jpg" alt="Eroğlu Skyline Detay 1">
+          <div class="project-overlay">
+            <span class="project-category">Eroğlu Skyline</span>
+            <h3 class="project-name">Cephe Detayı</h3>
+            <p class="project-location"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg> Detay</p>
+          </div>
+          <div class="project-card-border"></div>
+        </div>
+        <div class="project-card reveal" style="transition-delay:0.3s">
+          <img src="assets/images/skyline_detail2.jpg" alt="Eroğlu Skyline Detay 2">
+          <div class="project-overlay">
+            <span class="project-category">Eroğlu Skyline</span>
+            <h3 class="project-name">Giriş Detayı</h3>
+            <p class="project-location"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg> Detay</p>
+          </div>
+          <div class="project-card-border"></div>
+        </div>
+      </div>
+
+      <!-- ── Skyline İç Mekan ── -->
+      <div class="project-section-title reveal"><span>02</span> Eroğlu Skyline — İç Mekan Tasarımları</div>
+      <div class="interior-grid">
+        <div class="interior-card reveal">
+          <img src="assets/images/interior_salon.jpg" alt="Skyline Salon">
+          <div class="interior-label">Salon</div>
+        </div>
+        <div class="interior-card reveal" style="transition-delay:0.08s">
+          <img src="assets/images/interior_oturma.jpg" alt="Skyline Oturma Odası">
+          <div class="interior-label">Oturma Odası</div>
+        </div>
+        <div class="interior-card reveal" style="transition-delay:0.16s">
+          <img src="assets/images/interior_mutfak.jpg" alt="Skyline Mutfak">
+          <div class="interior-label">Mutfak</div>
+        </div>
+        <div class="interior-card reveal" style="transition-delay:0.24s">
+          <img src="assets/images/interior_yatak.jpg" alt="Skyline Yatak Odası">
+          <div class="interior-label">Yatak Odası</div>
+        </div>
+        <div class="interior-card reveal" style="transition-delay:0.32s">
+          <img src="assets/images/interior_cocuk.jpg" alt="Skyline Çocuk Odası">
+          <div class="interior-label">Çocuk Odası</div>
+        </div>
+        <div class="interior-card reveal" style="transition-delay:0.4s">
+          <img src="assets/images/interior_banyo.jpg" alt="Skyline Banyo">
+          <div class="interior-label">Banyo</div>
+        </div>
+        <div class="interior-card reveal" style="transition-delay:0.48s">
+          <img src="assets/images/interior_balkon.jpg" alt="Skyline Balkon Detay">
+          <div class="interior-label">Balkon Detay</div>
+        </div>
+      </div>
+
+      <!-- ── Hacılar Villa ── -->
+      <div class="project-section-title reveal"><span>03</span> Hacılar Villa — Lüks Yaşam</div>
+      <div class="projects-grid">
+        <div class="project-card featured reveal">
+          <img src="assets/images/villa1.jpg" alt="Hacılar Villa Ana Görünüm">
+          <div class="project-overlay">
+            <span class="project-category">Lüks Villa</span>
+            <h3 class="project-name">Hacılar Villa</h3>
+            <p class="project-location"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg> Hacılar, Türkiye</p>
+          </div>
+          <div class="project-card-border"></div>
+        </div>
+        <div class="project-card reveal" style="transition-delay:0.1s">
+          <img src="assets/images/villa2.jpg" alt="Hacılar Villa Açı 2">
+          <div class="project-overlay">
+            <span class="project-category">Hacılar Villa</span>
+            <h3 class="project-name">Yan Görünüm</h3>
+            <p class="project-location"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg> Doğal Taş</p>
+          </div>
+          <div class="project-card-border"></div>
+        </div>
+        <div class="project-card reveal" style="transition-delay:0.2s">
+          <img src="assets/images/villa3.jpg" alt="Hacılar Villa Açı 3">
+          <div class="project-overlay">
+            <span class="project-category">Hacılar Villa</span>
+            <h3 class="project-name">Perspektif</h3>
+            <p class="project-location"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg> Cephe Tasarımı</p>
+          </div>
+          <div class="project-card-border"></div>
+        </div>
+        <div class="project-card reveal" style="transition-delay:0.1s">
+          <img src="assets/images/villa4.jpg" alt="Hacılar Villa Açı 4">
+          <div class="project-overlay">
+            <span class="project-category">Hacılar Villa</span>
+            <h3 class="project-name">Arka Bahçe</h3>
+            <p class="project-location"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg> Peyzaj</p>
+          </div>
+          <div class="project-card-border"></div>
+        </div>
+        <div class="project-card featured reveal" style="transition-delay:0.2s">
+          <img src="assets/images/villa5.jpg" alt="Hacılar Villa Ön Cephe">
+          <div class="project-overlay">
+            <span class="project-category">Hacılar Villa</span>
+            <h3 class="project-name">Ön Cephe Tasarımı</h3>
+            <p class="project-location"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg> Cephe Detay</p>
+          </div>
+          <div class="project-card-border"></div>
+        </div>
+      </div>
+      <div class="projects-cta reveal">
+        <a href="#contact" class="btn-glass">
+          Tüm Projeleri Görüntüle
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════ STATS ═══════════ -->
+  <section class="stats-section" id="stats">
+    <div class="container">
+      <div class="stats-grid">
+        <div class="stat-card reveal">
+          <div class="stat-number" data-count="250">0</div>
+          <div class="stat-label">Tamamlanan Proje</div>
+        </div>
+        <div class="stat-card reveal" style="transition-delay:0.1s">
+          <div class="stat-number" data-count="1200">0</div>
+          <div class="stat-label">Mutlu Aile</div>
+        </div>
+        <div class="stat-card reveal" style="transition-delay:0.2s">
+          <div class="stat-number" data-count="50">0</div>
+          <div class="stat-label">Devam Eden Proje</div>
+        </div>
+        <div class="stat-card reveal" style="transition-delay:0.3s">
+          <div class="stat-number" data-count="85">0</div>
+          <div class="stat-label">Uzman Çalışan</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════ TESTIMONIALS ═══════════ -->
+  <section class="section testimonials" id="testimonials">
+    <div class="bg-gradient-orb cyan" style="top:-200px;right:-200px"></div>
+    <div class="container">
+      <div class="section-header reveal">
+        <div class="section-tag">Referanslar</div>
+        <h2 class="section-title">Müşterilerimiz<br>Ne Diyor?</h2>
+      </div>
+      <div class="testimonials-slider reveal">
+        <div class="testimonial-card" id="testimonialCard">
+          <p class="testimonial-quote" id="testimonialQuote">
+            Eroğlu İnşaat ile çalışmak büyük bir ayrıcalıktı. Projenin her aşamasında
+            profesyonel yaklaşımları ve kalite anlayışları bizi çok memnun etti.
+            Hayalimizdeki evi kusursuz bir şekilde inşa ettiler.
+          </p>
+          <div class="testimonial-author" id="testimonialAuthor">Mehmet Yılmaz</div>
+          <div class="testimonial-role" id="testimonialRole">Park Residence Sahibi</div>
+        </div>
+        <div class="testimonial-dots" id="testimonialDots">
+          <button class="testimonial-dot active" data-index="0" aria-label="Referans 1"></button>
+          <button class="testimonial-dot" data-index="1" aria-label="Referans 2"></button>
+          <button class="testimonial-dot" data-index="2" aria-label="Referans 3"></button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════ CONTACT ═══════════ -->
+  <section class="section contact" id="contact">
+    <div class="bg-grid"></div>
+    <div class="container">
+      <div class="contact-grid">
+        <div class="contact-info reveal-left">
+          <div class="contact-info-tag">─── İletişim</div>
+          <h2 class="contact-info-title">Projenizi Birlikte<br>Hayata Geçirelim</h2>
+          <p class="contact-info-desc">
+            Hayalinizdeki projeyi gerçeğe dönüştürmek için bizimle iletişime geçin.
+            Uzman ekibimiz en kısa sürede size dönüş yapacaktır.
+          </p>
+          <div class="contact-details">
+            <div class="contact-detail">
+              <div class="contact-detail-icon">📍</div>
+              <div class="contact-detail-text">
+                <h4>Merkez Ofis</h4>
+                <p><a href="https://share.google/l0SExobftYki6oF6A" target="_blank" style="color: inherit; text-decoration: none;">imam alim sultan caddesi 119/A Ankara , Turkey</a></p>
+              </div>
+            </div>
+            <div class="contact-detail">
+              <div class="contact-detail-icon">📞</div>
+              <div class="contact-detail-text">
+                <h4>Telefon</h4>
+                <p><a href="tel:05446212006" style="color: inherit; text-decoration: none;">0544 621 20 06</a></p>
+              </div>
+            </div>
+            <div class="contact-detail">
+              <div class="contact-detail-icon">✉️</div>
+              <div class="contact-detail-text">
+                <h4>E-posta</h4>
+                <p>info@erogluinsaat.com</p>
+              </div>
+            </div>
+            <div class="contact-detail">
+              <div class="contact-detail-icon">⏰</div>
+              <div class="contact-detail-text">
+                <h4>Çalışma Saatleri</h4>
+                <p>Pazartesi - Cumartesi: 09:00 - 18:00</p>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="contact-logo-wrapper reveal-right">
+          <div class="contact-logo-box">
+            <img src="assets/images/contact_logo.jpg" alt="Eroğlu İnşaat Logo" class="contact-logo-img">
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════ FOOTER ═══════════ -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div class="footer-brand">
+          <div class="footer-brand-title">Eroğlu İnşaat</div>
+          <p class="footer-brand-desc">
+            Kalite, güven ve yenilikçi tasarım anlayışımızla Türkiye'nin
+            geleceğini inşa ediyoruz. Her projemiz bir mirası temsil eder.
+          </p>
+          <div class="footer-social">
+            <a href="#" class="footer-social-link" aria-label="Instagram">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg>
+            </a>
+            <a href="#" class="footer-social-link" aria-label="LinkedIn">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/><rect x="2" y="9" width="4" height="12"/><circle cx="4" cy="4" r="2"/></svg>
+            </a>
+            <a href="#" class="footer-social-link" aria-label="Twitter">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 3a10.9 10.9 0 0 1-3.14 1.53 4.48 4.48 0 0 0-7.86 3v1A10.66 10.66 0 0 1 3 4s-4 9 5 13a11.64 11.64 0 0 1-7 2c9 5 20 0 20-11.5a4.5 4.5 0 0 0-.08-.83A7.72 7.72 0 0 0 23 3z"/></svg>
+            </a>
+            <a href="#" class="footer-social-link" aria-label="YouTube">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22.54 6.42a2.78 2.78 0 0 0-1.94-2C18.88 4 12 4 12 4s-6.88 0-8.6.46a2.78 2.78 0 0 0-1.94 2A29 29 0 0 0 1 11.75a29 29 0 0 0 .46 5.33A2.78 2.78 0 0 0 3.4 19.1c1.72.46 8.6.46 8.6.46s6.88 0 8.6-.46a2.78 2.78 0 0 0 1.94-2 29 29 0 0 0 .46-5.25 29 29 0 0 0-.46-5.43z"/><polygon points="9.75 15.02 15.5 11.75 9.75 8.48 9.75 15.02"/></svg>
+            </a>
+          </div>
+        </div>
+        <div>
+          <div class="footer-col-title">Hızlı Erişim</div>
+          <ul class="footer-links">
+            <li><a href="#about" class="footer-link">Hakkımızda</a></li>
+            <li><a href="#services" class="footer-link">Hizmetler</a></li>
+            <li><a href="#projects" class="footer-link">Projeler</a></li>
+            <li><a href="#contact" class="footer-link">İletişim</a></li>
+          </ul>
+        </div>
+        <div>
+          <div class="footer-col-title">Hizmetler</div>
+          <ul class="footer-links">
+            <li><a href="#" class="footer-link">Konut Projeleri</a></li>
+            <li><a href="#" class="footer-link">Ticari Yapılar</a></li>
+            <li><a href="#" class="footer-link">Altyapı</a></li>
+            <li><a href="#" class="footer-link">Restorasyon</a></li>
+          </ul>
+        </div>
+        <div>
+          <div class="footer-col-title">İletişim</div>
+          <ul class="footer-links">
+            <li><a href="tel:05446212006" class="footer-link">0544 621 20 06</a></li>
+            <li><a href="mailto:info@erogluinsaat.com" class="footer-link">info@erogluinsaat.com</a></li>
+            <li><a href="https://share.google/l0SExobftYki6oF6A" target="_blank" class="footer-link">imam alim sultan caddesi 119/A Ankara , Turkey</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p class="footer-copyright">© 2025 <a href="#">Eroğlu İnşaat</a>. Tüm hakları saklıdır.</p>
+        <div class="footer-bottom-links">
+          <a href="#">Gizlilik Politikası</a>
+          <a href="#">Kullanım Koşulları</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+  <!-- ═══════════ LIGHTBOX MODAL ═══════════ -->
+  <div class="lightbox" id="lightbox">
+    <span class="lightbox-close" id="lightboxClose">&times;</span>
+    <button class="lightbox-prev" id="lightboxPrev">&#10094;</button>
+    <img class="lightbox-content" id="lightboxImg" alt="Büyük Görsel">
+    <button class="lightbox-next" id="lightboxNext">&#10095;</button>
+    <div class="lightbox-caption" id="lightboxCaption"></div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
