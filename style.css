@@ -55,6 +55,7 @@ html {
   scroll-behavior: smooth;
   scrollbar-width: thin;
   scrollbar-color: var(--gold-primary) var(--bg-secondary);
+  overflow-x: hidden;
 }
 html::-webkit-scrollbar{width:6px}
 html::-webkit-scrollbar-track{background:var(--bg-primary)}
@@ -874,6 +875,7 @@ body::before {
 .section {
   padding: var(--section-padding);
   position: relative;
+  overflow: hidden;
 }
 .section-header {
   text-align: center;
@@ -1085,7 +1087,7 @@ body::before {
 }
 
 /* ─── Services Section ─── */
-.services{background:var(--bg-secondary)}
+.services{background:var(--bg-secondary);overflow:hidden}
 
 .services-grid {
   display: grid;
@@ -1475,7 +1477,7 @@ body::before {
 }
 
 /* ─── Contact Section ─── */
-.contact{background:var(--bg-secondary)}
+.contact{background:var(--bg-secondary);overflow:hidden}
 .contact-grid {
   display: grid;
   grid-template-columns: 1fr 1.2fr;
@@ -1654,6 +1656,7 @@ body::before {
   padding: 80px 0 30px;
   background: var(--bg-primary);
   border-top: 1px solid rgba(212,168,83,0.08);
+  overflow: hidden;
 }
 .footer-grid {
   display: grid;
@@ -1857,7 +1860,7 @@ body::before {
   .about-content{padding-left:0}
   .services-grid{grid-template-columns:1fr}
   .projects-grid{grid-template-columns:1fr}
-  .project-card.featured{aspect-ratio:16/10}
+  .project-card.featured{grid-column:span 1;aspect-ratio:16/10}
   .stats-grid{grid-template-columns:repeat(2,1fr);gap:16px}
   .stat-number{font-size:2.5rem}
   .contact-grid{grid-template-columns:1fr;gap:40px}
@@ -1878,7 +1881,7 @@ body::before {
   .hero-title{font-size:2rem}
   .section-title{font-size:1.8rem}
   .about-features{grid-template-columns:1fr}
-  .about-experience-badge{width:100px;height:100px;bottom:-20px;right:-10px}
+  .about-experience-badge{width:100px;height:100px;bottom:-20px;right:10px}
   .about-experience-badge .number{font-size:2rem}
   .building-title{font-size:2rem}
   .interior-grid{grid-template-columns:1fr}
