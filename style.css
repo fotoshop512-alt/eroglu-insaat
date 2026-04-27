@@ -1742,33 +1742,18 @@ body::before {
 }
 .footer-bottom-links a:hover{color:var(--gold-light)}
 
-/* ─── Scroll Reveal ─── */
-.reveal {
-  opacity: 0;
-  transform: translateY(50px);
-  transition: all 0.9s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+/* ─── Scroll Reveal (disabled — content always visible) ─── */
+.reveal,
+.reveal-left,
+.reveal-right,
+.reveal-scale,
+.reveal.active,
+.reveal-left.active,
+.reveal-right.active,
+.reveal-scale.active {
+  opacity: 1;
+  transform: none;
 }
-.reveal.active{opacity:1;transform:translateY(0)}
-.reveal-left {
-  opacity: 0;
-  transform: translateX(-80px);
-  transition: all 0.9s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-}
-.reveal-left.active{opacity:1;transform:translateX(0)}
-.reveal-right {
-  opacity: 0;
-  transform: translateX(80px);
-  transition: all 0.9s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-}
-.reveal-right.active{opacity:1;transform:translateX(0)}
-
-/* Scale in */
-.reveal-scale {
-  opacity: 0;
-  transform: scale(0.9);
-  transition: all 0.9s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-}
-.reveal-scale.active{opacity:1;transform:scale(1)}
 
 /* ─── Background Decorations ─── */
 .bg-grid {
