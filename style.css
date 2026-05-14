@@ -2148,3 +2148,322 @@ body::before {
   .lightbox-next { right: 10px; padding: 10px 15px; }
   .lightbox-close { top: 15px; right: 20px; }
 }
+
+/* ═══════════════════════════════════════════════
+   VR GEZİNTİ — Three.js 3D Bina Turu
+   ═══════════════════════════════════════════════ */
+.vr-tour {
+  padding: var(--section-padding);
+  position: relative;
+  overflow: hidden;
+  background: var(--bg-primary);
+}
+
+.vr-canvas-wrapper {
+  position: relative;
+  width: 100%;
+  border-radius: 12px;
+  overflow: hidden;
+  border: 1px solid rgba(0, 229, 255, 0.12);
+  box-shadow:
+    0 0 60px rgba(0, 229, 255, 0.06),
+    0 0 120px rgba(212, 168, 83, 0.04),
+    inset 0 1px 0 rgba(255,255,255,0.04);
+  margin-top: 60px;
+  background: var(--bg-secondary);
+}
+
+#vrCanvas {
+  display: block;
+  width: 100% !important;
+  height: auto !important;
+}
+
+.vr-hint {
+  position: absolute;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: rgba(6, 6, 18, 0.75);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 50px;
+  padding: 10px 22px;
+  font-family: var(--font-futuristic);
+  font-size: 0.72rem;
+  font-weight: 500;
+  letter-spacing: 1.5px;
+  color: var(--text-secondary);
+  white-space: nowrap;
+  pointer-events: none;
+  animation: hintPulse 3s ease-in-out infinite;
+}
+.vr-hint svg { color: var(--cyan-primary); flex-shrink: 0; }
+
+@keyframes hintPulse {
+  0%, 100% { opacity: 0.8; }
+  50%       { opacity: 1; }
+}
+
+#vrTooltip {
+  position: absolute;
+  display: none;
+  background: rgba(0, 10, 25, 0.92);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(212, 168, 83, 0.4);
+  color: var(--gold-light);
+  font-family: var(--font-futuristic);
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  padding: 8px 16px;
+  border-radius: 6px;
+  pointer-events: none;
+  z-index: 10;
+  box-shadow: 0 4px 20px rgba(212,168,83,0.2);
+}
+
+.vr-floor-legend {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 20px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+.vr-floor-legend-item {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-family: var(--font-futuristic);
+  font-size: 0.68rem;
+  font-weight: 500;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+.vr-floor-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 2px;
+  background: var(--gold-primary);
+  box-shadow: 0 0 8px var(--gold-glow);
+}
+
+/* ── VR Modal ── */
+.vr-modal {
+  display: none;
+  position: fixed;
+  inset: 0;
+  z-index: 200000;
+  align-items: center;
+  justify-content: center;
+}
+.vr-modal.open { display: flex; }
+
+.vr-modal-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(4, 4, 12, 0.88);
+  backdrop-filter: blur(18px);
+  cursor: pointer;
+  animation: vrFadeIn 0.3s ease;
+}
+
+.vr-modal-content {
+  position: relative;
+  z-index: 1;
+  width: min(860px, 95vw);
+  max-height: 92vh;
+  background: rgba(10, 12, 24, 0.97);
+  border: 1px solid rgba(212, 168, 83, 0.2);
+  border-radius: 16px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  box-shadow:
+    0 0 80px rgba(0, 0, 0, 0.8),
+    0 0 40px rgba(212, 168, 83, 0.08);
+  animation: vrSlideUp 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@keyframes vrFadeIn  { from { opacity: 0 } to { opacity: 1 } }
+@keyframes vrSlideUp { from { opacity: 0; transform: translateY(30px) scale(0.97) } to { opacity: 1; transform: none } }
+
+.vr-modal-header {
+  padding: 28px 32px 20px;
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-shrink: 0;
+}
+.vr-modal-header-text h3 {
+  font-family: var(--font-heading);
+  font-size: 1.4rem;
+  font-weight: 700;
+  background: linear-gradient(135deg, var(--gold-light), var(--gold-primary));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+.vr-modal-header-text p {
+  font-family: var(--font-futuristic);
+  font-size: 0.72rem;
+  font-weight: 500;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin-top: 4px;
+}
+.vr-modal-close {
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.08);
+  color: var(--text-secondary);
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  font-size: 20px;
+  line-height: 1;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: var(--transition-smooth);
+  flex-shrink: 0;
+}
+.vr-modal-close:hover {
+  background: rgba(212,168,83,0.1);
+  border-color: var(--gold-primary);
+  color: var(--gold-light);
+  transform: rotate(90deg);
+}
+
+/* Room tabs */
+.vr-room-tabs {
+  display: flex;
+  gap: 6px;
+  padding: 16px 32px;
+  overflow-x: auto;
+  flex-shrink: 0;
+  scrollbar-width: none;
+  border-bottom: 1px solid rgba(255,255,255,0.05);
+}
+.vr-room-tabs::-webkit-scrollbar { display: none; }
+
+.vr-room-tab {
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(255,255,255,0.07);
+  color: var(--text-secondary);
+  font-family: var(--font-futuristic);
+  font-size: 0.72rem;
+  font-weight: 500;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  padding: 9px 18px;
+  border-radius: 6px;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: var(--transition-smooth);
+  flex-shrink: 0;
+}
+.vr-room-tab:hover {
+  background: rgba(255,255,255,0.06);
+  border-color: rgba(212,168,83,0.2);
+  color: var(--text-primary);
+}
+.vr-room-tab.active {
+  background: rgba(212, 168, 83, 0.1);
+  border-color: var(--gold-primary);
+  color: var(--gold-light);
+  box-shadow: 0 0 16px rgba(212,168,83,0.15);
+}
+
+/* Room viewer */
+.vr-room-viewer {
+  flex: 1;
+  position: relative;
+  overflow: hidden;
+  min-height: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #020408;
+}
+
+#vrRoomImg {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  max-height: 460px;
+  display: block;
+  transition: opacity 0.2s ease;
+}
+
+.vr-room-nav {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background: rgba(6, 6, 18, 0.75);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(255,255,255,0.1);
+  color: var(--text-primary);
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  font-size: 22px;
+  line-height: 1;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: var(--transition-smooth);
+  z-index: 2;
+}
+.vr-room-nav:hover {
+  background: rgba(212,168,83,0.15);
+  border-color: var(--gold-primary);
+  color: var(--gold-light);
+  box-shadow: 0 0 20px rgba(212,168,83,0.2);
+}
+.vr-room-nav.prev { left: 16px; }
+.vr-room-nav.next { right: 16px; }
+
+.vr-room-name {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 14px 24px;
+  background: linear-gradient(transparent, rgba(4, 4, 14, 0.88));
+  font-family: var(--font-futuristic);
+  font-size: 0.75rem;
+  font-weight: 500;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--gold-light);
+}
+
+/* ── VR Responsive ── */
+@media (max-width: 768px) {
+  .vr-canvas-wrapper { margin-top: 36px; border-radius: 8px; }
+  .vr-hint { font-size: 0.65rem; padding: 8px 14px; gap: 7px; }
+  .vr-modal-content { border-radius: 12px; }
+  .vr-modal-header { padding: 20px 20px 16px; }
+  .vr-modal-header-text h3 { font-size: 1.1rem; }
+  .vr-room-tabs { padding: 12px 16px; gap: 5px; }
+  .vr-room-tab { font-size: 0.65rem; padding: 7px 13px; }
+  #vrRoomImg { max-height: 280px; }
+  .vr-room-nav { width: 36px; height: 36px; font-size: 18px; }
+}
+
+@media (max-width: 480px) {
+  .vr-modal-header { padding: 16px; }
+  .vr-room-tabs { padding: 10px 12px; }
+}
+

@@ -7,6 +7,8 @@
   <meta name="description" content="Eroğlu İnşaat, Ankara'nın lider inşaat şirketi. Arsa sahipleri için kazançlı projeler; ev, lüks villa veya daire satın almak isteyenler için premium konutlar üretiyoruz. Ankara inşaat firmaları arasında güvenin adresi.">
   <meta name="keywords" content="Ankara inşaat şirketi, Ankara inşaat firmaları, Ankara müteahhit, kat karşılığı arsa Ankara, arsa değerlendirme, Ankara villa projeleri, lüks daire Ankara, satılık ev Ankara, satılık villa">
   <link rel="stylesheet" href="style.css">
+  <!-- Three.js for VR Tour -->
+  <script src="https://cdn.jsdelivr.net/npm/three@0.161.0/build/three.min.js" defer></script>
   <!-- Favicon - Google Search & Browser Tabs -->
   <link rel="icon" href="/favicon.ico" sizes="32x32">
   <link rel="icon" type="image/png" href="/favicon-16x16.png" sizes="16x16">
@@ -49,6 +51,7 @@
       <ul class="nav-links" id="navLinks">
         <li><a href="#about" class="nav-link">Hakkımızda</a></li>
         <li><a href="#building-showcase" class="nav-link">3D Görünüm</a></li>
+        <li><a href="#vr-tour" class="nav-link">VR Gezinti</a></li>
         <li><a href="#services" class="nav-link">Hizmetler</a></li>
         <li><a href="#projects" class="nav-link">Projeler</a></li>
         <li><a href="#testimonials" class="nav-link">Referanslar</a></li>
@@ -67,6 +70,7 @@
   <div class="mobile-menu-overlay" id="mobileMenu">
     <a href="#about" class="nav-link" onclick="closeMobileMenu()">Hakkımızda</a>
     <a href="#building-showcase" class="nav-link" onclick="closeMobileMenu()">3D Görünüm</a>
+    <a href="#vr-tour" class="nav-link" onclick="closeMobileMenu()">VR Gezinti</a>
     <a href="#services" class="nav-link" onclick="closeMobileMenu()">Hizmetler</a>
     <a href="#projects" class="nav-link" onclick="closeMobileMenu()">Projeler</a>
     <a href="#testimonials" class="nav-link" onclick="closeMobileMenu()">Referanslar</a>
@@ -76,7 +80,10 @@
   <!-- ═══════════ HERO ═══════════ -->
   <section class="hero" id="hero">
     <div class="hero-bg">
-      <img src="assets/images/skyline1.jpg" alt="Eroğlu Skyline - Modern Çok Katlı Konut Projesi" loading="eager">
+      <picture>
+        <source srcset="assets/images/skyline1.webp" type="image/webp">
+        <img src="assets/images/skyline1.jpg" alt="Eroğlu Skyline - Modern Çok Katlı Konut Projesi" loading="eager" fetchpriority="high">
+      </picture>
       <div class="hero-bg-overlay"></div>
     </div>
     <div class="hero-particles" id="heroParticles"></div>
@@ -484,6 +491,65 @@
     </div>
   </section>
 
+  <!-- ═══════════ VR GEZİNTİ ═══════════ -->
+  <section class="section vr-tour" id="vr-tour">
+    <div class="bg-grid"></div>
+    <div class="bg-gradient-orb cyan" style="top:10%;right:-200px"></div>
+    <div class="bg-gradient-orb gold" style="bottom:10%;left:-200px"></div>
+    <div class="container">
+      <div class="section-header reveal">
+        <div class="section-tag">VR Gezinti</div>
+        <h2 class="section-title">Binayı 360°<br>Keşfedin</h2>
+        <p class="section-desc">
+          3D modelimizi fare ile sürükleyerek her açıdan inceleyin.
+          Bir daireye tıklayın ve oda oda sanal tura başlayın.
+        </p>
+      </div>
+    </div>
+
+    <div class="container">
+      <div class="vr-canvas-wrapper" id="vrCanvasWrapper">
+        <canvas id="vrCanvas"></canvas>
+        <div class="vr-hint">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 9l4-4 4 4"/><path d="M5 15l4 4 4-4"/><path d="M19 9l-4-4-4 4"/></svg>
+          Döndürmek için sürükleyin &nbsp;•&nbsp; Yakınlaştırmak için kaydırın &nbsp;•&nbsp; Daireye tıklayın
+        </div>
+        <div id="vrTooltip"></div>
+      </div>
+      <div class="vr-floor-legend">
+        <div class="vr-floor-legend-item">
+          <div class="vr-floor-dot" style="background:var(--gold-primary)"></div>
+          Üzerine gelin — kat/daire bilgisi
+        </div>
+        <div class="vr-floor-legend-item">
+          <div class="vr-floor-dot" style="background:var(--cyan-primary)"></div>
+          Tıklayın — sanal oda turu
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════ VR MODAL ═══════════ -->
+  <div class="vr-modal" id="vrModal" role="dialog" aria-modal="true">
+    <div class="vr-modal-overlay" onclick="closeVrModal()"></div>
+    <div class="vr-modal-content">
+      <div class="vr-modal-header">
+        <div class="vr-modal-header-text">
+          <h3 id="vrModalTitle">Daire</h3>
+          <p>Sanal oda turunu keşfedin</p>
+        </div>
+        <button class="vr-modal-close" onclick="closeVrModal()" aria-label="Kapat">&#x2715;</button>
+      </div>
+      <div class="vr-room-tabs" id="vrRoomTabs"></div>
+      <div class="vr-room-viewer">
+        <button class="vr-room-nav prev" onclick="vrChangeRoom(-1)" aria-label="Önceki oda">&#8249;</button>
+        <img id="vrRoomImg" src="" alt="Oda görünümü">
+        <button class="vr-room-nav next" onclick="vrChangeRoom(1)" aria-label="Sonraki oda">&#8250;</button>
+        <div class="vr-room-name" id="vrRoomName"></div>
+      </div>
+    </div>
+  </div>
+
   <!-- ═══════════ STATS ═══════════ -->
   <section class="stats-section" id="stats">
     <div class="container">
@@ -658,5 +724,31 @@
   </div>
 
   <script src="script.js"></script>
+  <script src="vr-tour.js"></script>
+
+  <!-- WebP otomatik yükseltme: lazy-load görseller için src'yi .webp'ye çevir -->
+  <script>
+  (function () {
+    var c = document.createElement('canvas');
+    if (!c.getContext || !c.getContext('2d')) return;
+    var supportsWebP = c.toDataURL('image/webp').indexOf('data:image/webp') === 0;
+    if (!supportsWebP) return;
+    document.addEventListener('DOMContentLoaded', function () {
+      document.querySelectorAll('img[loading="lazy"]').forEach(function (img) {
+        var src = img.getAttribute('src');
+        if (src && /\.(jpg|jpeg|png)$/i.test(src)) {
+          img.setAttribute('src', src.replace(/\.(jpg|jpeg|png)$/i, '.webp'));
+        }
+      });
+      /* showcase main img swap on click da webp kullansın */
+      var origChange = window.changeShowcaseImg;
+      if (typeof origChange === 'function') {
+        window.changeShowcaseImg = function (el, src) {
+          origChange(el, src.replace(/\.(jpg|jpeg|png)$/i, '.webp'));
+        };
+      }
+    });
+  })();
+  </script>
 </body>
 </html>
