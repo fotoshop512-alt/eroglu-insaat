@@ -148,8 +148,9 @@
     renderer.setSize(W(), H());
     renderer.shadowMap.enabled = true;
     renderer.shadowMap.type = THREE.PCFSoftShadowMap;
-    renderer.toneMapping = THREE.ACESFilmicToneMapping;
-    renderer.toneMappingExposure = 1.1;
+    /* Three.js v0.155+ kullanır fiziksel ışıklandırma — ACES yerine Linear */
+    renderer.toneMapping = THREE.LinearToneMapping;
+    renderer.toneMappingExposure = 1.0;
 
     buildOrbitScene();
     startRenderLoop();
@@ -293,17 +294,19 @@
     camera = new THREE.PerspectiveCamera(45, 1, 0.1, 600);
     updateOrbitCamera();
 
-    /* Lights */
-    scene.add(new THREE.AmbientLight(0x1a2540, 3.0));
-    const sun = new THREE.DirectionalLight(0xaabbd0, 4.0);
+    /* Lights — Three.js v0.184 fiziksel mod için yüksek intensity */
+    const hemi = new THREE.HemisphereLight(0x8ab4d4, 0x445566, 2.5);
+    scene.add(hemi);
+    scene.add(new THREE.AmbientLight(0x556688, 1.5));
+    const sun = new THREE.DirectionalLight(0xffffff, 4.0);
     sun.position.set(35, 70, 25); sun.castShadow = true;
     sun.shadow.camera.left = -50; sun.shadow.camera.right = 50;
     sun.shadow.camera.top  = 90;  sun.shadow.camera.bottom = -10;
     sun.shadow.mapSize.set(2048, 2048); sun.shadow.bias = -0.001;
     scene.add(sun);
-    const gold = new THREE.PointLight(0xd4a853, 6, 80);
+    const gold = new THREE.PointLight(0xd4a853, 3.0, 80);
     gold.position.set(-18, 28, 18); scene.add(gold);
-    const cyan = new THREE.PointLight(0x00e5ff, 4, 70);
+    const cyan = new THREE.PointLight(0x00e5ff, 2.0, 70);
     cyan.position.set(18, 6, 28); scene.add(cyan);
 
     /* Ground */
@@ -319,9 +322,15 @@
     const AW = BW / 2, AD = BD / 2, AGAP = 0.1;
     aptMeshes = [];
 
+    /* MeshStandardMaterial — Three.js v0.184 fiziksel ışıkla uyumlu */
+    function stdMat(color, rough, metal) {
+      return new THREE.MeshStandardMaterial({ color, roughness: rough ?? 0.7, metalness: metal ?? 0.15 });
+    }
+
     function floorColor(f) {
+      /* Açık beton-cam cephe tonları */
       const t = f / (FLOORS - 1);
-      return new THREE.Color(0.08 + t * 0.06, 0.11 + t * 0.08, 0.22 + t * 0.12);
+      return new THREE.Color(0.45 + t * 0.1, 0.52 + t * 0.08, 0.62 + t * 0.06);
     }
 
     for (let f = 0; f < FLOORS; f++) {
@@ -329,14 +338,14 @@
       /* slab */
       const slab = new THREE.Mesh(
         new THREE.BoxGeometry(BW + 0.3, GAP, BD + 0.3),
-        new THREE.MeshPhongMaterial({ color: 0x080c18 })
+        stdMat(0x2a3040, 0.8, 0.0)
       );
       slab.position.set(0, y0, 0); scene.add(slab);
 
       for (let row = 0; row < 2; row++) {
         for (let col = 0; col < 2; col++) {
           const cx = (col - 0.5) * AW, cz = (row - 0.5) * AD, cy = y0 + GAP / 2 + FH / 2;
-          const mat = new THREE.MeshPhongMaterial({ color: floorColor(f), shininess: 55, specular: new THREE.Color(0x223355) });
+          const mat = stdMat(floorColor(f).getHex(), 0.6, 0.2);
           const mesh = new THREE.Mesh(new THREE.BoxGeometry(AW - AGAP, FH, AD - AGAP), mat);
           mesh.position.set(cx, cy, cz); mesh.castShadow = true; mesh.receiveShadow = true;
           mesh.userData = { isApt: true, floor: f + 1, apt: ['A','B','C','D'][col + row * 2], defaultColor: floorColor(f).clone() };
@@ -349,15 +358,16 @@
     }
     /* top slab */
     const topY = FLOORS * (FH + GAP);
-    scene.add(Object.assign(new THREE.Mesh(new THREE.BoxGeometry(BW + 0.4, 0.22, BD + 0.4), new THREE.MeshPhongMaterial({ color: 0x070a16 })), { position: new THREE.Vector3(0, topY, 0) }));
+    const topSlab = new THREE.Mesh(new THREE.BoxGeometry(BW + 0.4, 0.22, BD + 0.4), stdMat(0x1e2535, 0.9, 0.0));
+    topSlab.position.set(0, topY, 0); scene.add(topSlab);
     /* penthouse */
-    const ph = new THREE.Mesh(new THREE.BoxGeometry(8, 3.5, 6), new THREE.MeshPhongMaterial({ color: 0x0e1428 }));
+    const ph = new THREE.Mesh(new THREE.BoxGeometry(8, 3.5, 6), stdMat(0x2a3550, 0.5, 0.3));
     ph.position.set(-1, topY + 1.85, 0); ph.castShadow = true; scene.add(ph);
     /* core */
-    const core = new THREE.Mesh(new THREE.BoxGeometry(2.5, topY + 5, 2.5), new THREE.MeshPhongMaterial({ color: 0x0b0e20 }));
+    const core = new THREE.Mesh(new THREE.BoxGeometry(2.5, topY + 5, 2.5), stdMat(0x1c2230, 0.9, 0.0));
     core.position.set(0, (topY + 5) / 2, 0); scene.add(core);
     /* antenna */
-    const ant = new THREE.Mesh(new THREE.CylinderGeometry(0.05, 0.05, 6, 6), new THREE.MeshPhongMaterial({ color: 0x334466 }));
+    const ant = new THREE.Mesh(new THREE.CylinderGeometry(0.05, 0.05, 6, 6), stdMat(0x4466aa, 0.4, 0.6));
     ant.position.set(0, topY + 8.5, 0); scene.add(ant);
   }
 
