@@ -46,7 +46,7 @@
   let currentRoomIdx = 0;
 
   // Orbit
-  const sph = { theta: 0.5, phi: 1.0, radius: 30 };
+  const sph = { theta: 0.0, phi: 1.25, radius: 28 };
   let isDragging = false;
   let lastP = { x: 0, y: 0 };
   let autoRotate = true;
@@ -139,90 +139,106 @@
   }
 
   /* ─────────────────────────────────────────
-     EXTERIOR — skyline foto'larla 4 yüzlü prizma
+     EXTERIOR — Billboard yaklaşımı:
+     Skyline render'ı her zaman kameraya bakan tek bir
+     plane'e map'lenir. Kamera döndüğünde 4 farklı render
+     arasında geçiş yapılır (en yakın açı seçilir).
   ──────────────────────────────────────────*/
-  function buildExterior() {
-    // Lights — basic'lerle texture'lar zaten parlak görünür
-    scene.add(new THREE.AmbientLight(0xffffff, 0.7));
-    const sun = new THREE.DirectionalLight(0xfff0d8, 1.4);
-    sun.position.set(25, 40, 20);
-    scene.add(sun);
-    const fill = new THREE.DirectionalLight(0x88aaff, 0.4);
-    fill.position.set(-15, 10, -15);
-    scene.add(fill);
+  let billboardPlanes = [];
 
-    // Ground — koyu reflektif
+  function buildExterior() {
+    // Hafif ambient — sahne tam karanlık olmasın
+    scene.add(new THREE.AmbientLight(0xffffff, 1.0));
+
+    // Ground — koyu reflektif disk
     const ground = new THREE.Mesh(
       new THREE.CircleGeometry(45, 64),
-      new THREE.MeshStandardMaterial({ color: 0x12161e, roughness: 0.85, metalness: 0.05 })
+      new THREE.MeshStandardMaterial({ color: 0x10141c, roughness: 0.9, metalness: 0.1 })
     );
     ground.rotation.x = -Math.PI / 2;
     ground.position.y = -0.01;
     scene.add(ground);
 
-    // Soft accent ring on ground
+    // Gold accent halka — binanın oturduğu zemin
     const ring = new THREE.Mesh(
-      new THREE.RingGeometry(11, 12, 64),
-      new THREE.MeshBasicMaterial({ color: 0xd4a853, transparent: true, opacity: 0.35, side: THREE.DoubleSide })
+      new THREE.RingGeometry(7, 8.2, 64),
+      new THREE.MeshBasicMaterial({ color: 0xd4a853, transparent: true, opacity: 0.55, side: THREE.DoubleSide, toneMapped: false })
     );
     ring.rotation.x = -Math.PI / 2;
-    ring.position.y = 0.01;
+    ring.position.y = 0.02;
     scene.add(ring);
 
-    // Building
+    // Halka altında soft cyan halo
+    const halo = new THREE.Mesh(
+      new THREE.RingGeometry(8.2, 14, 64),
+      new THREE.MeshBasicMaterial({ color: 0x4488dd, transparent: true, opacity: 0.10, side: THREE.DoubleSide, toneMapped: false })
+    );
+    halo.rotation.x = -Math.PI / 2;
+    halo.position.y = 0.01;
+    scene.add(halo);
+
+    // Bina = billboard plane (1 görünür, kameraya bakar)
     buildingGroup = new THREE.Group();
     buildingGroup.position.y = BUILDING.baseY;
 
-    const W = BUILDING.w, H = BUILDING.h, D = BUILDING.d;
-    const facadeDefs = [
-      { img: FACADES[0], pos: [ 0,       H/2,  D/2 + 0.01 ], rotY:  0 },
-      { img: FACADES[1], pos: [ W/2+0.01,H/2,  0          ], rotY: -Math.PI/2 },
-      { img: FACADES[2], pos: [ 0,       H/2, -D/2 - 0.01 ], rotY:  Math.PI },
-      { img: FACADES[3], pos: [-W/2-0.01,H/2,  0          ], rotY:  Math.PI/2 },
-    ];
+    // Skyline render aspect ratio: 1920×2880 = 0.667 (portrait)
+    // Yüksekliği 22 yapıp genişliği aspect'ten hesapla
+    const billH = 22;
+    const billW = billH * (1920/2880);  // ≈ 14.67
 
-    facadeDefs.forEach((f, i) => {
-      // Load texture upfront so material compiles WITH map from start
-      const tex = loadTex(f.img);
+    FACADES.forEach((img, i) => {
+      const tex = loadTex(img);
       const mat = new THREE.MeshBasicMaterial({
         map: tex,
         color: 0xffffff,
-        toneMapped: false,  // ham renkleri kullan, tone mapping uygulama
+        toneMapped: false,
+        transparent: true,
         side: THREE.DoubleSide
       });
       const plane = new THREE.Mesh(
-        new THREE.PlaneGeometry(W, H),
+        new THREE.PlaneGeometry(billW, billH),
         mat
       );
-      plane.position.set(f.pos[0], f.pos[1], f.pos[2]);
-      plane.rotation.y = f.rotY;
-      plane.userData.isFacade = true;
-      plane.userData.facadeIdx = i;
+      plane.position.set(0, billH/2, 0);
+      plane.userData.billboardIdx = i;
+      // Sadece ilk plane görünür başlangıçta
+      plane.visible = (i === 0);
+      plane.userData.targetOpacity = (i === 0 ? 1 : 0);
       buildingGroup.add(plane);
+      billboardPlanes.push(plane);
     });
-
-    // Top
-    const topTex = loadTex(TOP_IMG);
-    const topMat = new THREE.MeshBasicMaterial({
-      map: topTex,
-      color: 0xffffff,
-      toneMapped: false,
-      side: THREE.DoubleSide
-    });
-    const top = new THREE.Mesh(new THREE.PlaneGeometry(W, D), topMat);
-    top.position.set(0, H + 0.01, 0);
-    top.rotation.x = -Math.PI / 2;
-    buildingGroup.add(top);
-
-    // Glow halo around building (subtle)
-    const halo = new THREE.Mesh(
-      new THREE.CylinderGeometry(W * 0.85, W * 0.95, H * 1.05, 32, 1, true),
-      new THREE.MeshBasicMaterial({ color: 0x6699cc, transparent: true, opacity: 0.05, side: THREE.BackSide })
-    );
-    halo.position.y = H/2;
-    buildingGroup.add(halo);
 
     scene.add(buildingGroup);
+  }
+
+  /* Kamera açısına göre en yakın billboard'u seç + ona doğru çevir */
+  function updateBillboards() {
+    if (!billboardPlanes.length) return;
+    // Kamera dünya-pozisyonu xz düzleminde açı
+    const camAngle = Math.atan2(camera.position.x, camera.position.z); // -π..π
+    // 4 yüz: 0, π/2, π, -π/2 (skyline1=ön, detail1=sağ, skyline2=arka, detail2=sol)
+    const faceAngles = [0, Math.PI/2, Math.PI, -Math.PI/2];
+    // En yakın yüzü bul
+    let bestIdx = 0;
+    let bestDist = Infinity;
+    faceAngles.forEach((a, i) => {
+      let d = Math.abs(camAngle - a);
+      if (d > Math.PI) d = 2 * Math.PI - d;
+      if (d < bestDist) { bestDist = d; bestIdx = i; }
+    });
+    // Sadece en yakını göster
+    billboardPlanes.forEach((p, i) => {
+      const visible = (i === bestIdx);
+      p.userData.targetOpacity = visible ? 1 : 0;
+      // Smooth fade
+      p.material.opacity += (p.userData.targetOpacity - p.material.opacity) * 0.15;
+      p.visible = p.material.opacity > 0.01;
+    });
+    // Aktif plane'i kameraya çevir (Y ekseninde billboard)
+    const active = billboardPlanes[bestIdx];
+    if (active) {
+      active.lookAt(camera.position.x, active.position.y, camera.position.z);
+    }
   }
 
   /* ─────────────────────────────────────────
@@ -324,8 +340,9 @@
     const x = sph.radius * Math.sin(sph.phi) * Math.sin(sph.theta);
     const y = sph.radius * Math.cos(sph.phi);
     const z = sph.radius * Math.sin(sph.phi) * Math.cos(sph.theta);
-    camera.position.set(x, y + BUILDING.h/2, z);
-    camera.lookAt(0, BUILDING.h/2 - 2, 0);
+    // Billboard merkezi y=11 (h=22 / 2)
+    camera.position.set(x, y + 11, z);
+    camera.lookAt(0, 10, 0);
   }
 
   function updatePhotoCamera() {
@@ -456,6 +473,7 @@
         sph.theta += 0.0025;
         updateOrbitCamera();
       }
+      if (mode === 'orbit') updateBillboards();
       renderer.render(scene, camera);
     }
     tick();
