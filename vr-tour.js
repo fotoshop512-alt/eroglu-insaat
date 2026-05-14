@@ -60,12 +60,15 @@
   texLoader.crossOrigin = 'anonymous';
 
   function loadTex(url, onReady) {
-    return texLoader.load(url, tex => {
-      if ('SRGBColorSpace' in THREE) tex.colorSpace = THREE.SRGBColorSpace;
-      else tex.encoding = THREE.sRGBEncoding;
-      tex.anisotropy = 8;
-      onReady && onReady(tex);
+    const tex = texLoader.load(url, t => {
+      t.needsUpdate = true;
+      onReady && onReady(t);
     });
+    // colorSpace ve anisotropy'yi HEMEN ayarla (shader compile sırasında bilinmeli)
+    if ('SRGBColorSpace' in THREE) tex.colorSpace = THREE.SRGBColorSpace;
+    else tex.encoding = THREE.sRGBEncoding;
+    tex.anisotropy = 8;
+    return tex;
   }
 
   /* ─────────────────────────────────────────
@@ -328,9 +331,13 @@
   function setupEvents() {
     const canvas = document.getElementById('vrCanvas');
 
+    let downAt = null;
+    let downP = null;
     const onDown = (x, y) => {
       isDragging = true;
       lastP = { x, y };
+      downP = { x, y };
+      downAt = Date.now();
       autoRotate = false;
       clearTimeout(autoTimer);
     };
@@ -376,11 +383,15 @@
       e.preventDefault();
     }, { passive: false });
 
-    // Click bina → ilk odaya gir
+    // Click bina (sürükleme değilse) → ilk odaya gir
     canvas.addEventListener('click', e => {
       if (mode !== 'orbit') return;
-      // Check if mouse moved (drag vs click)
-      // Simply: any click on canvas in orbit triggers tour entry
+      // Sadece gerçek click — drag değil
+      if (!downP) return;
+      const dx = Math.abs(e.clientX - downP.x);
+      const dy = Math.abs(e.clientY - downP.y);
+      const dt = Date.now() - downAt;
+      if (dx > 6 || dy > 6 || dt > 350) return; // drag say
       enterPhotoTour(0);
     });
 
