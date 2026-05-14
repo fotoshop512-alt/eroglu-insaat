@@ -42,7 +42,6 @@
   let mode = 'orbit'; // 'orbit' | 'photo'
   let renderer, scene, camera;
   let buildingGroup;
-  let photoSphere = null;
   let currentRoomIdx = 0;
 
   // Orbit
@@ -122,6 +121,7 @@
     buildExterior();
     setupRoomList();
     setupEvents();
+    setupFpsControls();
     startRenderLoop();
     armAutoRotate();
 
@@ -242,88 +242,348 @@
   }
 
   /* ─────────────────────────────────────────
-     PHOTO-ROOM MODE
+     FPS APARTMENT MODE — 3D walkable rooms
   ──────────────────────────────────────────*/
+  // Apartman planı (üstten görünüm, x sağ, z ileri)
+  const WALL_H = 2.8;
+  const APT_ROOMS = [
+    { id: 'giris',  label: 'Giriş',         x1: -2, z1: -7,  x2: 2,  z2: -4, photo: null },
+    { id: 'salon',  label: 'Salon',         x1: -4, z1: -4,  x2: 4,  z2:  4, photo: 'assets/images/interior_salon.webp',  pwall: 'N' },
+    { id: 'mutfak', label: 'Mutfak',        x1:  4, z1: -2,  x2: 8,  z2:  2, photo: 'assets/images/interior_mutfak.webp', pwall: 'E' },
+    { id: 'balkon', label: 'Balkon',        x1: -8, z1: -2,  x2: -4, z2:  2, photo: 'assets/images/interior_balkon.webp', pwall: 'W' },
+    { id: 'oturma', label: 'Oturma Odası',  x1: -3, z1:  4,  x2: 3,  z2:  8, photo: 'assets/images/interior_oturma.webp', pwall: 'N' },
+    { id: 'yatak',  label: 'Yatak Odası',   x1: -7, z1:  4,  x2: -3, z2:  8, photo: 'assets/images/interior_yatak.webp',  pwall: 'N' },
+    { id: 'cocuk',  label: 'Çocuk Odası',   x1:  3, z1:  4,  x2: 7,  z2:  8, photo: 'assets/images/interior_cocuk.webp',  pwall: 'N' },
+    { id: 'banyo',  label: 'Banyo',         x1: -3, z1: -7,  x2: -1, z2: -4, photo: 'assets/images/interior_banyo.webp',  pwall: 'S' },
+  ];
+  // Kapılar: iki oda paylaşılan kenar boyunca açılır
+  const APT_DOORS = [
+    ['giris', 'salon'],
+    ['banyo', 'giris'],
+    ['salon', 'mutfak'],
+    ['salon', 'balkon'],
+    ['salon', 'oturma'],
+    ['oturma', 'yatak'],
+    ['oturma', 'cocuk'],
+  ];
+
+  let aptGroup = null;
+  let aptWalls = [];  // AABB list for collision
+  let fpsKeys = {};
+  let fpsClock = null;
+  let isPointerLocked = false;
+  let fpsActive = false;
+  const PLAYER_R = 0.35;
+  const EYE_H = 1.65;
+  const MOVE_SPD = 3.5;
+
+  function getRoom(id) { return APT_ROOMS.find(r => r.id === id); }
+
+  // İki odanın paylaşılan kenarını bul: dönen { axis: 'x'|'z', pos, t1, t2 }
+  function sharedEdge(a, b) {
+    // Vertical edge (x sabit)
+    if (Math.abs(a.x2 - b.x1) < 0.001) {
+      const t1 = Math.max(a.z1, b.z1), t2 = Math.min(a.z2, b.z2);
+      if (t2 > t1) return { axis: 'x', pos: a.x2, t1, t2 };
+    }
+    if (Math.abs(b.x2 - a.x1) < 0.001) {
+      const t1 = Math.max(a.z1, b.z1), t2 = Math.min(a.z2, b.z2);
+      if (t2 > t1) return { axis: 'x', pos: a.x1, t1, t2 };
+    }
+    // Horizontal edge (z sabit)
+    if (Math.abs(a.z2 - b.z1) < 0.001) {
+      const t1 = Math.max(a.x1, b.x1), t2 = Math.min(a.x2, b.x2);
+      if (t2 > t1) return { axis: 'z', pos: a.z2, t1, t2 };
+    }
+    if (Math.abs(b.z2 - a.z1) < 0.001) {
+      const t1 = Math.max(a.x1, b.x1), t2 = Math.min(a.x2, b.x2);
+      if (t2 > t1) return { axis: 'z', pos: a.z1, t1, t2 };
+    }
+    return null;
+  }
+
+  // Bir kenarda kapı boşluğu hesapla (ortada 1.2m geniş)
+  function doorGap(t1, t2) {
+    const mid = (t1 + t2) / 2;
+    const dw = 1.2;
+    return { gap1: Math.max(t1, mid - dw/2), gap2: Math.min(t2, mid + dw/2) };
+  }
+
+  // Wall segment ekle (collision + mesh)
+  function addWallSegment(group, axis, pos, t1, t2, photoTex) {
+    if (t2 - t1 < 0.05) return;
+    const len = t2 - t1;
+    const mid = (t1 + t2) / 2;
+    const wallThick = 0.12;
+    const wallGeo = new THREE.BoxGeometry(
+      axis === 'x' ? wallThick : len,
+      WALL_H,
+      axis === 'x' ? len : wallThick
+    );
+    let mat;
+    if (photoTex) {
+      mat = new THREE.MeshBasicMaterial({ map: photoTex, color: 0xffffff, toneMapped: false });
+    } else {
+      mat = new THREE.MeshStandardMaterial({ color: 0xeae0d0, roughness: 0.85 });
+    }
+    const mesh = new THREE.Mesh(wallGeo, mat);
+    if (axis === 'x') {
+      mesh.position.set(pos, WALL_H/2, mid);
+    } else {
+      mesh.position.set(mid, WALL_H/2, pos);
+    }
+    group.add(mesh);
+    // AABB for collision
+    const half = wallThick / 2 + PLAYER_R;
+    if (axis === 'x') {
+      aptWalls.push({ minX: pos - half, maxX: pos + half, minZ: t1 - PLAYER_R, maxZ: t2 + PLAYER_R });
+    } else {
+      aptWalls.push({ minX: t1 - PLAYER_R, maxX: t2 + PLAYER_R, minZ: pos - half, maxZ: pos + half });
+    }
+  }
+
+  function buildApartment() {
+    if (aptGroup) return;
+    aptGroup = new THREE.Group();
+    aptWalls = [];
+
+    // Lights
+    const amb = new THREE.AmbientLight(0xffffff, 0.6);
+    aptGroup.add(amb);
+    const sun = new THREE.DirectionalLight(0xfff0d8, 0.8);
+    sun.position.set(8, 20, 5);
+    aptGroup.add(sun);
+    // Multiple ceiling lights (one per room)
+    APT_ROOMS.forEach(r => {
+      const cx = (r.x1 + r.x2) / 2, cz = (r.z1 + r.z2) / 2;
+      const light = new THREE.PointLight(0xfff4d8, 1.2, 12, 1.5);
+      light.position.set(cx, WALL_H - 0.3, cz);
+      aptGroup.add(light);
+    });
+
+    // Texture loader for photos
+    const photoTextures = {};
+    APT_ROOMS.forEach(r => {
+      if (r.photo) photoTextures[r.id] = loadTex(r.photo);
+    });
+
+    // Floor & ceiling for each room
+    APT_ROOMS.forEach(r => {
+      const w = r.x2 - r.x1, d = r.z2 - r.z1;
+      const cx = (r.x1 + r.x2) / 2, cz = (r.z1 + r.z2) / 2;
+      // Floor
+      const floor = new THREE.Mesh(
+        new THREE.PlaneGeometry(w, d),
+        new THREE.MeshStandardMaterial({ color: 0xb89970, roughness: 0.7 })
+      );
+      floor.rotation.x = -Math.PI / 2;
+      floor.position.set(cx, 0, cz);
+      aptGroup.add(floor);
+      // Ceiling
+      const ceil = new THREE.Mesh(
+        new THREE.PlaneGeometry(w, d),
+        new THREE.MeshStandardMaterial({ color: 0xf5efe6, roughness: 0.95 })
+      );
+      ceil.rotation.x = Math.PI / 2;
+      ceil.position.set(cx, WALL_H, cz);
+      aptGroup.add(ceil);
+    });
+
+    // Walls — her oda için 4 duvar, kapı yerlerinde gap bırak
+    APT_ROOMS.forEach(r => {
+      const photoTex = r.photo ? photoTextures[r.id] : null;
+      // Her duvar için kapı pozisyonlarını bul
+      const doorsOn = { N: [], S: [], E: [], W: [] };
+      APT_DOORS.forEach(([a, b]) => {
+        if (a !== r.id && b !== r.id) return;
+        const other = getRoom(a === r.id ? b : a);
+        const edge = sharedEdge(r, other);
+        if (!edge) return;
+        // Bu kenar r için hangi duvar?
+        let wall;
+        if (edge.axis === 'x') {
+          wall = (edge.pos === r.x2) ? 'E' : 'W';
+        } else {
+          wall = (edge.pos === r.z2) ? 'N' : 'S';
+        }
+        const gap = doorGap(edge.t1, edge.t2);
+        doorsOn[wall].push(gap);
+      });
+
+      const wallDefs = [
+        { wall: 'N', axis: 'z', pos: r.z2, t1: r.x1, t2: r.x2 },
+        { wall: 'S', axis: 'z', pos: r.z1, t1: r.x1, t2: r.x2 },
+        { wall: 'E', axis: 'x', pos: r.x2, t1: r.z1, t2: r.z2 },
+        { wall: 'W', axis: 'x', pos: r.x1, t1: r.z1, t2: r.z2 },
+      ];
+
+      wallDefs.forEach(w => {
+        const useTex = (w.wall === r.pwall && photoTex) ? photoTex : null;
+        const gaps = doorsOn[w.wall] || [];
+        if (gaps.length === 0) {
+          addWallSegment(aptGroup, w.axis, w.pos, w.t1, w.t2, useTex);
+        } else {
+          // Sort gaps and create segments around them
+          const sorted = gaps.slice().sort((a, b) => a.gap1 - b.gap1);
+          let cursor = w.t1;
+          sorted.forEach(g => {
+            if (g.gap1 > cursor) addWallSegment(aptGroup, w.axis, w.pos, cursor, g.gap1, useTex);
+            cursor = g.gap2;
+          });
+          if (cursor < w.t2) addWallSegment(aptGroup, w.axis, w.pos, cursor, w.t2, useTex);
+        }
+      });
+    });
+  }
+
   function enterPhotoTour(idx) {
-    if (mode === 'photo') { changeRoom(idx); return; }
-    currentRoomIdx = idx;
+    if (mode === 'photo') return;
     mode = 'photo';
+    fpsActive = true;
     autoRotate = false;
     clearTimeout(autoTimer);
 
-    // Hide building
+    // Hide building exterior
     if (buildingGroup) buildingGroup.visible = false;
-
-    // Inside-out sphere
-    const geo = new THREE.SphereGeometry(50, 64, 32);
-    geo.scale(-1, 1, 1); // flip normals → görüntü içeride
-    const tex = loadTex(ROOMS[idx].img);
-    const mat = new THREE.MeshBasicMaterial({
-      map: tex,
-      color: 0xffffff,
-      toneMapped: false,
-      side: THREE.DoubleSide
+    scene.children.forEach(c => {
+      // Hide ground, ring, halo
+      if (c.geometry?.type === 'CircleGeometry' || c.geometry?.type === 'RingGeometry') c.visible = false;
     });
-    photoSphere = new THREE.Mesh(geo, mat);
-    scene.add(photoSphere);
 
-    // Camera to center, reset look
-    camera.position.set(0, 0, 0);
-    camera.fov = 75;
+    // Build apartment if not built
+    if (!aptGroup) buildApartment();
+    aptGroup.visible = true;
+    scene.add(aptGroup);
+
+    // Background → warm interior
+    scene.background = new THREE.Color(0xd5ccb9);
+    scene.fog = null;
+
+    // Camera başlangıç: Giriş'te
+    const giris = getRoom('giris');
+    const startX = (giris.x1 + giris.x2) / 2;
+    const startZ = (giris.z1 + giris.z2) / 2;
+    camera.position.set(startX, EYE_H, startZ);
+    camera.fov = 70;
     camera.updateProjectionMatrix();
-    yaw = 0; pitch = 0;
-    updatePhotoCamera();
+    yaw = 0;     // başlangıçta kuzey'e bak (salon yönü)
+    pitch = 0;
+    updateFpsLook();
+
+    fpsClock = new THREE.Clock();
+    fpsKeys = {};
+    currentRoomIdx = 0;
+    updateFpsUI();
 
     // UI swap
     const orbitUI = document.getElementById('vrOrbitUI');
     const fpsUI   = document.getElementById('vrFpsUI');
     if (orbitUI) orbitUI.style.display = 'none';
     if (fpsUI)   fpsUI.style.display   = 'block';
-    updatePhotoUI();
   }
 
-  function changeRoom(idx) {
-    if (idx < 0) idx = ROOMS.length - 1;
-    if (idx >= ROOMS.length) idx = 0;
-    currentRoomIdx = idx;
-    loadTex(ROOMS[idx].img, tex => {
-      if (!photoSphere) return;
-      const old = photoSphere.material.map;
-      photoSphere.material.map = tex;
-      photoSphere.material.color.set(0xffffff);
-      photoSphere.material.needsUpdate = true;
-      if (old) old.dispose();
-    });
-    updatePhotoUI();
+  function updateFpsLook() {
+    const tx = camera.position.x + Math.sin(yaw) * Math.cos(pitch);
+    const ty = camera.position.y + Math.sin(pitch);
+    const tz = camera.position.z + Math.cos(yaw) * Math.cos(pitch);
+    camera.lookAt(tx, ty, tz);
   }
 
-  function updatePhotoUI() {
-    const label = document.getElementById('vrRoomIndicator');
-    const apt   = document.getElementById('vrAptInfo');
-    if (label) label.textContent = ROOMS[currentRoomIdx].label;
-    if (apt)   apt.textContent   = `Daire 4+1 · ${currentRoomIdx + 1}/${ROOMS.length}`;
-    const dots = document.getElementById('vrRoomDots');
-    if (dots) {
-      dots.innerHTML = ROOMS.map((r, i) =>
-        `<button class="vr-room-dot${i === currentRoomIdx ? ' active' : ''}" data-idx="${i}" title="${r.label}"></button>`
-      ).join('');
+  function fpsTick(dt) {
+    let mx = 0, mz = 0;
+    if (fpsKeys['w'] || fpsKeys['arrowup'])    mz -= 1;
+    if (fpsKeys['s'] || fpsKeys['arrowdown'])  mz += 1;
+    if (fpsKeys['a'] || fpsKeys['arrowleft'])  mx -= 1;
+    if (fpsKeys['d'] || fpsKeys['arrowright']) mx += 1;
+    if (mx === 0 && mz === 0) return;
+    const len = Math.hypot(mx, mz);
+    mx /= len; mz /= len;
+    // forward in world coords
+    const fwdX = Math.sin(yaw), fwdZ = Math.cos(yaw);
+    const rgtX = Math.cos(yaw), rgtZ = -Math.sin(yaw);
+    const dx = (mx * rgtX + mz * (-fwdX)) * MOVE_SPD * dt;
+    const dz = (mx * rgtZ + mz * (-fwdZ)) * MOVE_SPD * dt;
+
+    // Move with collision (separate axes)
+    let newX = camera.position.x + dx;
+    let newZ = camera.position.z;
+    if (!collides(newX, newZ)) camera.position.x = newX;
+    newX = camera.position.x;
+    newZ = camera.position.z + dz;
+    if (!collides(newX, newZ)) camera.position.z = newZ;
+
+    updateFpsLook();
+    detectRoom();
+  }
+
+  function collides(x, z) {
+    for (const w of aptWalls) {
+      if (x > w.minX && x < w.maxX && z > w.minZ && z < w.maxZ) return true;
     }
+    return false;
+  }
+
+  let lastRoomId = null;
+  function detectRoom() {
+    const px = camera.position.x, pz = camera.position.z;
+    for (const r of APT_ROOMS) {
+      if (px > r.x1 && px < r.x2 && pz > r.z1 && pz < r.z2) {
+        if (lastRoomId !== r.id) {
+          lastRoomId = r.id;
+          const label = document.getElementById('vrRoomIndicator');
+          if (label) label.textContent = r.label;
+        }
+        return;
+      }
+    }
+  }
+
+  function updateFpsUI() {
+    const apt   = document.getElementById('vrAptInfo');
+    if (apt)   apt.textContent   = `Daire 4+1 · WASD ile yürü`;
+    const dots = document.getElementById('vrRoomDots');
+    if (dots) dots.innerHTML = '';
+  }
+
+  function teleportToRoom(id) {
+    const r = getRoom(id);
+    if (!r) return;
+    const cx = (r.x1 + r.x2) / 2;
+    const cz = (r.z1 + r.z2) / 2;
+    setTimeout(() => {
+      camera.position.set(cx, EYE_H, cz);
+      lastRoomId = null;
+      detectRoom();
+    }, 100);
+  }
+
+  function cycleRoom(dir) {
+    if (mode !== 'photo') return;
+    const idx = APT_ROOMS.findIndex(r => r.id === lastRoomId);
+    let next = (idx >= 0 ? idx + dir : 0);
+    if (next < 0) next = APT_ROOMS.length - 1;
+    if (next >= APT_ROOMS.length) next = 0;
+    teleportToRoom(APT_ROOMS[next].id);
   }
 
   function exitPhotoTour() {
     if (mode !== 'photo') return;
     mode = 'orbit';
-    if (photoSphere) {
-      scene.remove(photoSphere);
-      photoSphere.material.map?.dispose();
-      photoSphere.material.dispose();
-      photoSphere.geometry.dispose();
-      photoSphere = null;
-    }
+    fpsActive = false;
+    if (aptGroup) aptGroup.visible = false;
+    // Show building & ground
     if (buildingGroup) buildingGroup.visible = true;
+    scene.children.forEach(c => {
+      if (c.geometry?.type === 'CircleGeometry' || c.geometry?.type === 'RingGeometry') c.visible = true;
+    });
+    scene.background = new THREE.Color(0x0a0e18);
+
     camera.fov = 50;
     camera.updateProjectionMatrix();
     updateOrbitCamera();
+
+    // Exit pointer lock
+    if (document.pointerLockElement) document.exitPointerLock();
 
     const orbitUI = document.getElementById('vrOrbitUI');
     const fpsUI   = document.getElementById('vrFpsUI');
@@ -332,6 +592,38 @@
     armAutoRotate();
   }
   window.exitVRFPS = exitPhotoTour;
+
+  // Pointer lock + WASD setup
+  function setupFpsControls() {
+    const canvas = document.getElementById('vrCanvas');
+    // Click on canvas in fps mode → request pointer lock
+    canvas.addEventListener('click', () => {
+      if (mode === 'photo' && !isPointerLocked) {
+        canvas.requestPointerLock?.();
+      }
+    });
+    document.addEventListener('pointerlockchange', () => {
+      isPointerLocked = (document.pointerLockElement === canvas);
+      const hint = document.getElementById('vrFpsHud');
+      if (hint) hint.textContent = isPointerLocked ? 'WASD ile yürü · Fareyi hareket ettir' : 'Fareyi kilitle — Tıkla';
+    });
+    document.addEventListener('mousemove', e => {
+      if (!isPointerLocked || mode !== 'photo') return;
+      yaw   -= e.movementX * 0.0025;
+      pitch -= e.movementY * 0.0025;
+      pitch = Math.max(-1.4, Math.min(1.4, pitch));
+      updateFpsLook();
+    });
+    document.addEventListener('keydown', e => {
+      if (mode === 'photo' && fpsActive) {
+        fpsKeys[e.key.toLowerCase()] = true;
+        if (e.key === 'Escape') exitPhotoTour();
+      }
+    });
+    document.addEventListener('keyup', e => {
+      fpsKeys[e.key.toLowerCase()] = false;
+    });
+  }
 
   /* ─────────────────────────────────────────
      CAMERA
@@ -343,13 +635,6 @@
     // Billboard merkezi y=11 (h=22 / 2)
     camera.position.set(x, y + 11, z);
     camera.lookAt(0, 10, 0);
-  }
-
-  function updatePhotoCamera() {
-    const tx = Math.sin(yaw) * Math.cos(pitch);
-    const ty = Math.sin(pitch);
-    const tz = Math.cos(yaw) * Math.cos(pitch);
-    camera.lookAt(tx, ty, tz);
   }
 
   function armAutoRotate() {
@@ -375,18 +660,13 @@
     };
     const onMove = (x, y) => {
       if (!isDragging) return;
+      if (mode !== 'orbit') return;  // FPS modunda pointer-lock kullanıyoruz
       const dx = x - lastP.x;
       const dy = y - lastP.y;
       lastP = { x, y };
-      if (mode === 'orbit') {
-        sph.theta -= dx * 0.006;
-        sph.phi = Math.max(0.25, Math.min(1.55, sph.phi - dy * 0.005));
-        updateOrbitCamera();
-      } else {
-        yaw   -= dx * 0.005;
-        pitch  = Math.max(-1.2, Math.min(1.2, pitch - dy * 0.005));
-        updatePhotoCamera();
-      }
+      sph.theta -= dx * 0.006;
+      sph.phi = Math.max(0.25, Math.min(1.55, sph.phi - dy * 0.005));
+      updateOrbitCamera();
     };
     const onUp = () => { isDragging = false; if (mode === 'orbit') armAutoRotate(); };
 
@@ -408,11 +688,8 @@
       if (mode === 'orbit') {
         sph.radius = Math.max(15, Math.min(60, sph.radius + e.deltaY * 0.025));
         updateOrbitCamera();
-      } else if (mode === 'photo') {
-        camera.fov = Math.max(35, Math.min(90, camera.fov + e.deltaY * 0.05));
-        camera.updateProjectionMatrix();
+        e.preventDefault();
       }
-      e.preventDefault();
     }, { passive: false });
 
     // Click bina (sürükleme değilse) → ilk odaya gir
@@ -427,29 +704,18 @@
       enterPhotoTour(0);
     });
 
-    // Keyboard
-    document.addEventListener('keydown', e => {
-      if (mode === 'photo') {
-        if (e.key === 'Escape') exitPhotoTour();
-        else if (e.key === 'ArrowLeft')  changeRoom(currentRoomIdx - 1);
-        else if (e.key === 'ArrowRight') changeRoom(currentRoomIdx + 1);
-      }
-    });
-
-    // UI buttons (delegated)
+    // UI: oda butonuna tıklayınca FPS moda gir + o odaya teleport
     document.addEventListener('click', e => {
       const t = e.target.closest('[data-vr-room]');
       if (t) {
         const id = t.getAttribute('data-vr-room');
-        const idx = ROOMS.findIndex(r => r.id === id);
-        if (idx >= 0) enterPhotoTour(idx);
+        if (mode === 'orbit') enterPhotoTour(0);
+        teleportToRoom(id);
       }
-      const dot = e.target.closest('.vr-room-dot');
-      if (dot) changeRoom(parseInt(dot.dataset.idx));
       const prev = e.target.closest('#vrPrevRoom');
-      if (prev) changeRoom(currentRoomIdx - 1);
+      if (prev) cycleRoom(-1);
       const next = e.target.closest('#vrNextRoom');
-      if (next) changeRoom(currentRoomIdx + 1);
+      if (next) cycleRoom(1);
     });
   }
 
@@ -474,6 +740,10 @@
         updateOrbitCamera();
       }
       if (mode === 'orbit') updateBillboards();
+      if (mode === 'photo' && fpsActive && fpsClock) {
+        const dt = Math.min(fpsClock.getDelta(), 0.05);
+        fpsTick(dt);
+      }
       renderer.render(scene, camera);
     }
     tick();
