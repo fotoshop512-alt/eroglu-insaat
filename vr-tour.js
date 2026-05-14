@@ -184,7 +184,12 @@
     facadeDefs.forEach((f, i) => {
       // Load texture upfront so material compiles WITH map from start
       const tex = loadTex(f.img);
-      const mat = new THREE.MeshBasicMaterial({ map: tex, color: 0xffffff });
+      const mat = new THREE.MeshBasicMaterial({
+        map: tex,
+        color: 0xffffff,
+        toneMapped: false,  // ham renkleri kullan, tone mapping uygulama
+        side: THREE.DoubleSide
+      });
       const plane = new THREE.Mesh(
         new THREE.PlaneGeometry(W, H),
         mat
@@ -198,7 +203,12 @@
 
     // Top
     const topTex = loadTex(TOP_IMG);
-    const topMat = new THREE.MeshBasicMaterial({ map: topTex, color: 0xffffff });
+    const topMat = new THREE.MeshBasicMaterial({
+      map: topTex,
+      color: 0xffffff,
+      toneMapped: false,
+      side: THREE.DoubleSide
+    });
     const top = new THREE.Mesh(new THREE.PlaneGeometry(W, D), topMat);
     top.position.set(0, H + 0.01, 0);
     top.rotation.x = -Math.PI / 2;
@@ -232,7 +242,12 @@
     const geo = new THREE.SphereGeometry(50, 64, 32);
     geo.scale(-1, 1, 1); // flip normals → görüntü içeride
     const tex = loadTex(ROOMS[idx].img);
-    const mat = new THREE.MeshBasicMaterial({ map: tex, color: 0xffffff });
+    const mat = new THREE.MeshBasicMaterial({
+      map: tex,
+      color: 0xffffff,
+      toneMapped: false,
+      side: THREE.DoubleSide
+    });
     photoSphere = new THREE.Mesh(geo, mat);
     scene.add(photoSphere);
 
