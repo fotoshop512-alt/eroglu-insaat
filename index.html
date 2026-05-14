@@ -7,8 +7,8 @@
   <meta name="description" content="Eroğlu İnşaat, Ankara'nın lider inşaat şirketi. Arsa sahipleri için kazançlı projeler; ev, lüks villa veya daire satın almak isteyenler için premium konutlar üretiyoruz. Ankara inşaat firmaları arasında güvenin adresi.">
   <meta name="keywords" content="Ankara inşaat şirketi, Ankara inşaat firmaları, Ankara müteahhit, kat karşılığı arsa Ankara, arsa değerlendirme, Ankara villa projeleri, lüks daire Ankara, satılık ev Ankara, satılık villa">
   <link rel="stylesheet" href="style.css">
-  <!-- Three.js for VR Tour -->
-  <script src="https://cdn.jsdelivr.net/npm/three@0.161.0/build/three.min.js" defer></script>
+  <!-- Three.js for VR Tour (local bundle) -->
+  <script src="assets/three.min.js"></script>
   <!-- Favicon - Google Search & Browser Tabs -->
   <link rel="icon" href="/favicon.ico" sizes="32x32">
   <link rel="icon" type="image/png" href="/favicon-16x16.png" sizes="16x16">
@@ -499,10 +499,10 @@
     <div class="container">
       <div class="section-header reveal">
         <div class="section-tag">VR Gezinti</div>
-        <h2 class="section-title">Binayı 360°<br>Keşfedin</h2>
+        <h2 class="section-title">Projeyi İçinden<br>Keşfedin</h2>
         <p class="section-desc">
-          3D modelimizi fare ile sürükleyerek her açıdan inceleyin.
-          Bir daireye tıklayın ve oda oda sanal tura başlayın.
+          Binayı 360° döndürün, bir daireye tıklayın ve gerçek zamanlı 3D ortamda
+          oda oda yürüyerek keşfedin. Tarayıcıdan, yükleme olmadan.
         </p>
       </div>
     </div>
@@ -510,12 +510,39 @@
     <div class="container">
       <div class="vr-canvas-wrapper" id="vrCanvasWrapper">
         <canvas id="vrCanvas"></canvas>
-        <div class="vr-hint">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 9l4-4 4 4"/><path d="M5 15l4 4 4-4"/><path d="M19 9l-4-4-4 4"/></svg>
-          Döndürmek için sürükleyin &nbsp;•&nbsp; Yakınlaştırmak için kaydırın &nbsp;•&nbsp; Daireye tıklayın
+
+        <!-- Orbit mode UI -->
+        <div class="vr-orbit-ui" id="vrOrbitUI">
+          <div class="vr-hint">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M3 12h3m12 0h3M12 3v3m0 12v3"/></svg>
+            Döndür: Sürükle &nbsp;·&nbsp; Zoom: Kaydır &nbsp;·&nbsp;
+            <span style="color:var(--gold-primary);font-weight:600;">Daireye tıkla → İçeri gir</span>
+          </div>
         </div>
+
+        <!-- FPS mode UI -->
+        <div class="vr-fps-ui" id="vrFpsUI" style="display:none">
+          <div class="vr-fps-top">
+            <div class="vr-fps-apt-badge">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+              <span id="vrAptInfo">Daire</span>
+            </div>
+            <div class="vr-room-badge" id="vrRoomIndicator">Giriş</div>
+            <button class="vr-exit-btn" onclick="exitVRFPS()">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+              Çık
+            </button>
+          </div>
+          <div class="vr-crosshair"></div>
+          <div class="vr-fps-hud" id="vrFpsHud">Fareyi Kilitle — Tıkla</div>
+          <div class="vr-fps-controls">
+            <span>WASD</span> Hareket &nbsp;·&nbsp; <span>Fare</span> Bakış &nbsp;·&nbsp; <span>ESC</span> Çık
+          </div>
+        </div>
+
         <div id="vrTooltip"></div>
       </div>
+
       <div class="vr-floor-legend">
         <div class="vr-floor-legend-item">
           <div class="vr-floor-dot" style="background:var(--gold-primary)"></div>
@@ -523,32 +550,15 @@
         </div>
         <div class="vr-floor-legend-item">
           <div class="vr-floor-dot" style="background:var(--cyan-primary)"></div>
-          Tıklayın — sanal oda turu
+          Tıklayın — 3D daire turu başlar
+        </div>
+        <div class="vr-floor-legend-item">
+          <div class="vr-floor-dot" style="background:#7c88aa"></div>
+          WASD ile odalar arası geçiş
         </div>
       </div>
     </div>
   </section>
-
-  <!-- ═══════════ VR MODAL ═══════════ -->
-  <div class="vr-modal" id="vrModal" role="dialog" aria-modal="true">
-    <div class="vr-modal-overlay" onclick="closeVrModal()"></div>
-    <div class="vr-modal-content">
-      <div class="vr-modal-header">
-        <div class="vr-modal-header-text">
-          <h3 id="vrModalTitle">Daire</h3>
-          <p>Sanal oda turunu keşfedin</p>
-        </div>
-        <button class="vr-modal-close" onclick="closeVrModal()" aria-label="Kapat">&#x2715;</button>
-      </div>
-      <div class="vr-room-tabs" id="vrRoomTabs"></div>
-      <div class="vr-room-viewer">
-        <button class="vr-room-nav prev" onclick="vrChangeRoom(-1)" aria-label="Önceki oda">&#8249;</button>
-        <img id="vrRoomImg" src="" alt="Oda görünümü">
-        <button class="vr-room-nav next" onclick="vrChangeRoom(1)" aria-label="Sonraki oda">&#8250;</button>
-        <div class="vr-room-name" id="vrRoomName"></div>
-      </div>
-    </div>
-  </div>
 
   <!-- ═══════════ STATS ═══════════ -->
   <section class="stats-section" id="stats">

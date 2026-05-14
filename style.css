@@ -2179,11 +2179,154 @@ body::before {
   height: auto !important;
 }
 
-.vr-hint {
+/* ── Orbit UI overlay ── */
+.vr-orbit-ui {
   position: absolute;
-  bottom: 20px;
-  left: 50%;
-  transform: translateX(-50%);
+  bottom: 0; left: 0; right: 0;
+  display: flex;
+  justify-content: center;
+  pointer-events: none;
+}
+
+/* ── FPS UI overlay ── */
+.vr-fps-ui {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  pointer-events: none;
+}
+
+.vr-fps-top {
+  width: 100%;
+  padding: 14px 20px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: linear-gradient(to bottom, rgba(4,4,14,0.7), transparent);
+  pointer-events: all;
+}
+
+.vr-fps-apt-badge {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  background: rgba(212,168,83,0.12);
+  border: 1px solid rgba(212,168,83,0.3);
+  border-radius: 6px;
+  padding: 6px 14px;
+  font-family: var(--font-futuristic);
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--gold-light);
+}
+.vr-fps-apt-badge svg { color: var(--gold-primary); }
+
+.vr-room-badge {
+  background: rgba(0,229,255,0.1);
+  border: 1px solid rgba(0,229,255,0.25);
+  border-radius: 6px;
+  padding: 6px 14px;
+  font-family: var(--font-futuristic);
+  font-size: 0.7rem;
+  font-weight: 500;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--cyan-primary);
+  transition: all 0.3s ease;
+}
+
+.vr-exit-btn {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.12);
+  border-radius: 6px;
+  padding: 7px 16px;
+  font-family: var(--font-futuristic);
+  font-size: 0.7rem;
+  font-weight: 500;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--text-secondary);
+  cursor: pointer;
+  pointer-events: all;
+  transition: var(--transition-smooth);
+}
+.vr-exit-btn:hover {
+  background: rgba(255,80,80,0.1);
+  border-color: rgba(255,80,80,0.3);
+  color: #ff8888;
+}
+
+.vr-crosshair {
+  width: 20px; height: 20px;
+  position: relative;
+  flex-shrink: 0;
+}
+.vr-crosshair::before,
+.vr-crosshair::after {
+  content: '';
+  position: absolute;
+  background: rgba(255,255,255,0.8);
+  border-radius: 1px;
+  box-shadow: 0 0 4px rgba(0,0,0,0.8);
+}
+.vr-crosshair::before { width: 2px; height: 14px; left: 9px; top: 3px; }
+.vr-crosshair::after  { width: 14px; height: 2px; left: 3px; top: 9px; }
+
+.vr-fps-hud {
+  font-family: var(--font-futuristic);
+  font-size: 0.72rem;
+  font-weight: 500;
+  letter-spacing: 1.5px;
+  color: var(--gold-light);
+  background: rgba(4,4,14,0.7);
+  border: 1px solid rgba(212,168,83,0.25);
+  border-radius: 6px;
+  padding: 8px 20px;
+  text-transform: uppercase;
+  animation: hudPulse 2s ease-in-out infinite;
+}
+@keyframes hudPulse {
+  0%, 100% { opacity: 0.9; }
+  50%       { opacity: 1;   box-shadow: 0 0 12px rgba(212,168,83,0.2); }
+}
+
+.vr-fps-controls {
+  width: 100%;
+  padding: 12px 20px;
+  display: flex;
+  justify-content: center;
+  gap: 6px;
+  background: linear-gradient(to top, rgba(4,4,14,0.7), transparent);
+  font-family: var(--font-futuristic);
+  font-size: 0.65rem;
+  letter-spacing: 1px;
+  color: var(--text-muted);
+  text-transform: uppercase;
+}
+.vr-fps-controls span {
+  background: rgba(255,255,255,0.08);
+  border: 1px solid rgba(255,255,255,0.12);
+  border-radius: 4px;
+  padding: 2px 7px;
+  color: var(--text-secondary);
+  font-weight: 600;
+}
+
+/* hint reset to work within orbit-ui */
+.vr-hint {
+  position: relative;
+  bottom: auto; left: auto;
+  transform: none;
+  margin: 0 0 20px 0;
   display: flex;
   align-items: center;
   gap: 10px;
