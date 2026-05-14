@@ -2351,6 +2351,111 @@ body::before {
   50%       { opacity: 1; }
 }
 
+/* Oda listesi (orbit modunda altta) */
+.vr-room-list {
+  position: absolute;
+  bottom: 22px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  justify-content: center;
+  max-width: 90%;
+  pointer-events: auto;
+  z-index: 4;
+}
+.vr-room-btn {
+  background: rgba(15, 20, 30, 0.78);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(212, 168, 83, 0.35);
+  color: #f4eee0;
+  padding: 9px 16px;
+  border-radius: 999px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.4px;
+  cursor: pointer;
+  transition: all 0.18s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-family: inherit;
+}
+.vr-room-btn:hover {
+  background: rgba(212, 168, 83, 0.92);
+  color: #15110a;
+  border-color: var(--gold-primary);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(212, 168, 83, 0.35);
+}
+.vr-room-btn-icon { font-size: 0.7rem; opacity: 0.7; }
+.vr-room-btn:hover .vr-room-btn-icon { opacity: 1; }
+
+/* Photo-tour navigation arrows */
+.vr-nav-arrow {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: rgba(15, 20, 30, 0.75);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1.5px solid rgba(255, 255, 255, 0.18);
+  color: #fff;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  z-index: 5;
+  pointer-events: auto;
+}
+.vr-nav-arrow:hover {
+  background: var(--gold-primary);
+  color: #15110a;
+  border-color: var(--gold-primary);
+  transform: translateY(-50%) scale(1.08);
+}
+.vr-nav-prev { left: 18px; }
+.vr-nav-next { right: 18px; }
+
+/* Photo-tour bottom dots */
+.vr-room-dots {
+  position: absolute;
+  bottom: 56px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 10px;
+  z-index: 4;
+  pointer-events: auto;
+}
+.vr-room-dot {
+  width: 11px;
+  height: 11px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.35);
+  border: 1.5px solid rgba(255, 255, 255, 0.55);
+  cursor: pointer;
+  padding: 0;
+  transition: all 0.2s ease;
+}
+.vr-room-dot:hover {
+  background: rgba(212, 168, 83, 0.8);
+  transform: scale(1.25);
+}
+.vr-room-dot.active {
+  background: var(--gold-primary);
+  border-color: var(--gold-primary);
+  width: 26px;
+  border-radius: 999px;
+  box-shadow: 0 0 12px rgba(212, 168, 83, 0.55);
+}
+
 #vrTooltip {
   position: absolute;
   display: none;
