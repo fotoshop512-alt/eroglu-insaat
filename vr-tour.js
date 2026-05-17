@@ -267,6 +267,129 @@
     ['oturma', 'cocuk'],
   ];
 
+  /* 3D mobilya tanımları — basit box geometriler, fotoğraflara benzer yerleşim
+     type: 'box' (varsayılan) veya 'cyl' (silindir)
+     x/z = merkez, y opsiyonel (varsayılan h/2 = zemine oturur) */
+  const FURNITURE = {
+    salon: [
+      // Halı
+      { x: -2.5, y: 0.01, z: -2, w: 3.6, h: 0.02, d: 2.2, c: 0x9c7a5e },
+      // 3-li kanepe
+      { x: -2.8, z: -3.0, w: 2.6, h: 0.45, d: 0.9, c: 0x4a566b },
+      { x: -2.8, y: 0.85, z: -3.3, w: 2.6, h: 0.5, d: 0.3, c: 0x4a566b }, // sırt
+      { x: -4.0, y: 0.7, z: -3.0, w: 0.25, h: 0.45, d: 0.9, c: 0x4a566b }, // kolçak sol
+      { x: -1.5, y: 0.7, z: -3.0, w: 0.25, h: 0.45, d: 0.9, c: 0x4a566b }, // kolçak sağ
+      // Yastıklar
+      { x: -3.5, y: 0.55, z: -3.0, w: 0.4, h: 0.2, d: 0.4, c: 0xc4a673 },
+      { x: -2.0, y: 0.55, z: -3.0, w: 0.4, h: 0.2, d: 0.4, c: 0x8a6850 },
+      // Sehpa
+      { x: -2.8, z: -1.6, w: 1.2, h: 0.4, d: 0.6, c: 0x6a4f33 },
+      // Tek koltuk (sağda)
+      { x: 1.5, z: -2.5, w: 0.95, h: 0.45, d: 0.95, c: 0x5a6675 },
+      { x: 1.5, y: 0.85, z: -2.8, w: 0.95, h: 0.5, d: 0.3, c: 0x5a6675 },
+      // TV ünitesi
+      { x: -2.8, z: 3.7, w: 2.6, h: 0.5, d: 0.35, c: 0x2a2018 },
+      // TV (LED ekran)
+      { x: -2.8, y: 1.0, z: 3.85, w: 1.8, h: 0.95, d: 0.06, c: 0x080808 },
+      // Lamba
+      { x: 2.5, z: -3.2, w: 0.25, h: 1.6, d: 0.25, c: 0xc8a06a },
+    ],
+    mutfak: [
+      // L tezgah
+      { x: 5.5, z: -1.6, w: 3.0, h: 0.9, d: 0.55, c: 0xe6dec8 },
+      { x: 7.5, z: 0.5, w: 0.55, h: 0.9, d: 3.0, c: 0xe6dec8 },
+      // Üst dolaplar
+      { x: 5.5, y: 2.0, z: -1.6, w: 3.0, h: 0.7, d: 0.35, c: 0xc4b698 },
+      { x: 7.5, y: 2.0, z: 0.5, w: 0.4, h: 0.7, d: 2.5, c: 0xc4b698 },
+      // Ocak
+      { x: 5.5, y: 0.92, z: -1.5, w: 0.7, h: 0.04, d: 0.5, c: 0x222222 },
+      // Yemek masası
+      { x: 4.7, z: 1.5, w: 1.2, h: 0.04, d: 0.8, c: 0x7a5638 },
+      { x: 4.7, y: 0.35, z: 1.5, w: 0.08, h: 0.7, d: 0.08, c: 0x7a5638 },
+      // Sandalyeler (önce oturak sonra sırt)
+      { x: 4.05, z: 1.5, w: 0.4, h: 0.45, d: 0.4, c: 0x3a3a3a },
+      { x: 4.05, y: 0.7, z: 1.35, w: 0.4, h: 0.45, d: 0.06, c: 0x3a3a3a },
+      { x: 5.35, z: 1.5, w: 0.4, h: 0.45, d: 0.4, c: 0x3a3a3a },
+      { x: 5.35, y: 0.7, z: 1.35, w: 0.4, h: 0.45, d: 0.06, c: 0x3a3a3a },
+    ],
+    yatak: [
+      // Karyola çerçeve
+      { x: -5.5, z: 7.0, w: 2.0, h: 0.4, d: 1.9, c: 0x5a4030 },
+      // Şilte/yorgan
+      { x: -5.5, y: 0.45, z: 7.0, w: 1.9, h: 0.15, d: 1.8, c: 0xefe6d4 },
+      // Başlık
+      { x: -5.5, y: 0.8, z: 7.85, w: 2.0, h: 1.1, d: 0.1, c: 0x7a5a3e },
+      // Yastıklar
+      { x: -6.0, y: 0.6, z: 7.6, w: 0.55, h: 0.15, d: 0.35, c: 0xffffff },
+      { x: -5.0, y: 0.6, z: 7.6, w: 0.55, h: 0.15, d: 0.35, c: 0xffffff },
+      // Komodin
+      { x: -6.7, z: 7.5, w: 0.45, h: 0.55, d: 0.4, c: 0x6b5a40 },
+      // Komodin lambası
+      { x: -6.7, y: 0.8, z: 7.5, w: 0.18, h: 0.35, d: 0.18, c: 0xd4b478 },
+      // Gardırop
+      { x: -3.5, z: 5.0, w: 0.55, h: 2.3, d: 2.4, c: 0xc4b29a },
+    ],
+    cocuk: [
+      // Tek kişilik yatak
+      { x: 6.5, z: 5.5, w: 0.95, h: 0.35, d: 1.85, c: 0x4a90c2 },
+      { x: 6.5, y: 0.4, z: 5.5, w: 0.9, h: 0.12, d: 1.75, c: 0xfff8e0 },
+      { x: 6.5, y: 0.55, z: 6.3, w: 0.95, h: 0.95, d: 0.08, c: 0x3a78a8 },
+      // Yastık
+      { x: 6.5, y: 0.5, z: 6.15, w: 0.5, h: 0.1, d: 0.3, c: 0xffffff },
+      // Çalışma masası
+      { x: 3.5, z: 7.4, w: 0.55, h: 0.04, d: 1.0, c: 0xc8a978 },
+      { x: 3.5, y: 0.35, z: 7.4, w: 0.08, h: 0.7, d: 0.08, c: 0xc8a978 },
+      // Sandalye
+      { x: 4.2, z: 7.0, w: 0.4, h: 0.45, d: 0.4, c: 0x6a86a8 },
+      // Raf/kitaplık
+      { x: 5.7, y: 0.5, z: 7.7, w: 1.0, h: 1.0, d: 0.25, c: 0xa68868 },
+    ],
+    banyo: [
+      // Lavabo
+      { x: -2.6, z: -4.4, w: 0.65, h: 0.85, d: 0.45, c: 0xfafafa },
+      { x: -2.6, y: 1.45, z: -4.3, w: 0.6, h: 0.6, d: 0.04, c: 0xeeeeee }, // ayna
+      // Klozet
+      { x: -1.4, z: -5.0, w: 0.4, h: 0.4, d: 0.55, c: 0xfafafa },
+      { x: -1.4, y: 0.55, z: -5.2, w: 0.4, h: 0.5, d: 0.12, c: 0xfafafa }, // tank
+      // Duş kabini camı
+      { x: -2.6, z: -6.3, w: 0.95, h: 2.1, d: 1.0, c: 0xaacfdd, opacity: 0.25 },
+    ],
+    balkon: [
+      // Bistro masa
+      { x: -6.0, z: 0.5, w: 0.7, h: 0.04, d: 0.7, c: 0x6a4f33 },
+      { x: -6.0, y: 0.35, z: 0.5, w: 0.07, h: 0.7, d: 0.07, c: 0x6a4f33 },
+      // 2 sandalye
+      { x: -7.0, z: 0.5, w: 0.4, h: 0.45, d: 0.4, c: 0x5a4533 },
+      { x: -5.0, z: 0.5, w: 0.4, h: 0.45, d: 0.4, c: 0x5a4533 },
+      // Saksı + bitki
+      { x: -7.5, z: -1.5, w: 0.4, h: 0.45, d: 0.4, c: 0x8a5a40 },
+      { x: -7.5, y: 0.65, z: -1.5, w: 0.55, h: 0.7, d: 0.55, c: 0x4a7a3a },
+    ],
+    oturma: [
+      // 2'li kanepe
+      { x: 0, z: 7.4, w: 1.8, h: 0.45, d: 0.8, c: 0x6c7a8a },
+      { x: 0, y: 0.85, z: 7.6, w: 1.8, h: 0.55, d: 0.3, c: 0x6c7a8a },
+      // Iki koltuk
+      { x: -2.0, z: 5.3, w: 0.85, h: 0.45, d: 0.85, c: 0x556673 },
+      { x: -2.0, y: 0.85, z: 5.0, w: 0.85, h: 0.5, d: 0.3, c: 0x556673 },
+      { x:  2.0, z: 5.3, w: 0.85, h: 0.45, d: 0.85, c: 0x556673 },
+      { x:  2.0, y: 0.85, z: 5.0, w: 0.85, h: 0.5, d: 0.3, c: 0x556673 },
+      // Sehpa
+      { x: 0, z: 5.8, w: 1.0, h: 0.4, d: 0.5, c: 0x6a4f33 },
+      // Halı
+      { x: 0, y: 0.01, z: 6.6, w: 2.6, h: 0.02, d: 2.0, c: 0xa88a6c },
+    ],
+    giris: [
+      // Konsol
+      { x: 1.5, z: -6.7, w: 0.3, h: 0.85, d: 0.9, c: 0x6b5a40 },
+      { x: 1.5, y: 1.55, z: -6.8, w: 0.3, h: 0.7, d: 0.04, c: 0xeeeeee }, // ayna
+      // Ayakkabılık
+      { x: -1.5, z: -6.7, w: 0.3, h: 0.5, d: 0.9, c: 0x6b5a40 },
+      // Kilim
+      { x: 0, y: 0.01, z: -5.5, w: 1.5, h: 0.02, d: 1.2, c: 0xa07060 },
+    ],
+  };
+
   let aptGroup = null;
   let aptWalls = [];  // AABB list for collision
   let fpsKeys = {};
@@ -309,8 +432,8 @@
     return { gap1: Math.max(t1, mid - dw/2), gap2: Math.min(t2, mid + dw/2) };
   }
 
-  // Wall segment ekle (collision + mesh)
-  function addWallSegment(group, axis, pos, t1, t2, photoTex) {
+  // Wall segment ekle (collision + mesh) — düz krem duvar
+  function addWallSegment(group, axis, pos, t1, t2) {
     if (t2 - t1 < 0.05) return;
     const len = t2 - t1;
     const mid = (t1 + t2) / 2;
@@ -320,12 +443,7 @@
       WALL_H,
       axis === 'x' ? len : wallThick
     );
-    let mat;
-    if (photoTex) {
-      mat = new THREE.MeshBasicMaterial({ map: photoTex, color: 0xffffff, toneMapped: false });
-    } else {
-      mat = new THREE.MeshStandardMaterial({ color: 0xeae0d0, roughness: 0.85 });
-    }
+    const mat = new THREE.MeshStandardMaterial({ color: 0xeae0d0, roughness: 0.9 });
     const mesh = new THREE.Mesh(wallGeo, mat);
     if (axis === 'x') {
       mesh.position.set(pos, WALL_H/2, mid);
@@ -340,6 +458,66 @@
     } else {
       aptWalls.push({ minX: t1 - PLAYER_R, maxX: t2 + PLAYER_R, minZ: pos - half, maxZ: pos + half });
     }
+  }
+
+  // Mobilyaları odaya yerleştir
+  function addFurniture(group, roomId) {
+    const items = FURNITURE[roomId];
+    if (!items) return;
+    items.forEach(it => {
+      const w = it.w, h = it.h, d = it.d;
+      const x = it.x, z = it.z;
+      const y = it.y !== undefined ? it.y + h/2 : h/2;
+      const mat = new THREE.MeshStandardMaterial({
+        color: it.c,
+        roughness: 0.75,
+        metalness: 0.05,
+        transparent: it.opacity !== undefined,
+        opacity: it.opacity ?? 1
+      });
+      const mesh = new THREE.Mesh(new THREE.BoxGeometry(w, h, d), mat);
+      mesh.position.set(x, y, z);
+      group.add(mesh);
+    });
+  }
+
+  // Duvara küçük çerçeveli fotoğraf as (oda referansı için)
+  function addPhotoFrame(group, room) {
+    if (!room.photo || !room.pwall) return;
+    const tex = loadTex(room.photo);
+    const frameW = 1.6, frameH = 1.1;
+    const padding = 0.06;
+    // Çerçeve (arka)
+    const frameMat = new THREE.MeshStandardMaterial({ color: 0x3a2e20, roughness: 0.5 });
+    const frame = new THREE.Mesh(
+      new THREE.BoxGeometry(frameW + padding*2, frameH + padding*2, 0.05),
+      frameMat
+    );
+    // İç görüntü
+    const photoMat = new THREE.MeshBasicMaterial({ map: tex, color: 0xffffff, toneMapped: false });
+    const photo = new THREE.Mesh(new THREE.PlaneGeometry(frameW, frameH), photoMat);
+
+    const cx = (room.x1 + room.x2) / 2;
+    const cz = (room.z1 + room.z2) / 2;
+    const wallOffset = 0.08;
+    const yPos = 1.6;
+    let fx = cx, fz = cz, rotY = 0;
+    if (room.pwall === 'N') { fz = room.z2 - wallOffset; rotY = Math.PI; }
+    else if (room.pwall === 'S') { fz = room.z1 + wallOffset; rotY = 0; }
+    else if (room.pwall === 'E') { fx = room.x2 - wallOffset; rotY = -Math.PI/2; }
+    else if (room.pwall === 'W') { fx = room.x1 + wallOffset; rotY = Math.PI/2; }
+    frame.position.set(fx, yPos, fz);
+    frame.rotation.y = rotY;
+    photo.position.copy(frame.position);
+    photo.rotation.y = rotY;
+    // Photo hafifçe çerçevenin önünde
+    const nudge = 0.035;
+    if (room.pwall === 'N') photo.position.z -= nudge;
+    else if (room.pwall === 'S') photo.position.z += nudge;
+    else if (room.pwall === 'E') photo.position.x -= nudge;
+    else if (room.pwall === 'W') photo.position.x += nudge;
+    group.add(frame);
+    group.add(photo);
   }
 
   function buildApartment() {
@@ -359,12 +537,6 @@
       const light = new THREE.PointLight(0xfff4d8, 1.2, 12, 1.5);
       light.position.set(cx, WALL_H - 0.3, cz);
       aptGroup.add(light);
-    });
-
-    // Texture loader for photos
-    const photoTextures = {};
-    APT_ROOMS.forEach(r => {
-      if (r.photo) photoTextures[r.id] = loadTex(r.photo);
     });
 
     // Floor & ceiling for each room
@@ -391,23 +563,16 @@
 
     // Walls — her oda için 4 duvar, kapı yerlerinde gap bırak
     APT_ROOMS.forEach(r => {
-      const photoTex = r.photo ? photoTextures[r.id] : null;
-      // Her duvar için kapı pozisyonlarını bul
       const doorsOn = { N: [], S: [], E: [], W: [] };
       APT_DOORS.forEach(([a, b]) => {
         if (a !== r.id && b !== r.id) return;
         const other = getRoom(a === r.id ? b : a);
         const edge = sharedEdge(r, other);
         if (!edge) return;
-        // Bu kenar r için hangi duvar?
         let wall;
-        if (edge.axis === 'x') {
-          wall = (edge.pos === r.x2) ? 'E' : 'W';
-        } else {
-          wall = (edge.pos === r.z2) ? 'N' : 'S';
-        }
-        const gap = doorGap(edge.t1, edge.t2);
-        doorsOn[wall].push(gap);
+        if (edge.axis === 'x') wall = (edge.pos === r.x2) ? 'E' : 'W';
+        else                    wall = (edge.pos === r.z2) ? 'N' : 'S';
+        doorsOn[wall].push(doorGap(edge.t1, edge.t2));
       });
 
       const wallDefs = [
@@ -418,21 +583,23 @@
       ];
 
       wallDefs.forEach(w => {
-        const useTex = (w.wall === r.pwall && photoTex) ? photoTex : null;
         const gaps = doorsOn[w.wall] || [];
         if (gaps.length === 0) {
-          addWallSegment(aptGroup, w.axis, w.pos, w.t1, w.t2, useTex);
+          addWallSegment(aptGroup, w.axis, w.pos, w.t1, w.t2);
         } else {
-          // Sort gaps and create segments around them
           const sorted = gaps.slice().sort((a, b) => a.gap1 - b.gap1);
           let cursor = w.t1;
           sorted.forEach(g => {
-            if (g.gap1 > cursor) addWallSegment(aptGroup, w.axis, w.pos, cursor, g.gap1, useTex);
+            if (g.gap1 > cursor) addWallSegment(aptGroup, w.axis, w.pos, cursor, g.gap1);
             cursor = g.gap2;
           });
-          if (cursor < w.t2) addWallSegment(aptGroup, w.axis, w.pos, cursor, w.t2, useTex);
+          if (cursor < w.t2) addWallSegment(aptGroup, w.axis, w.pos, cursor, w.t2);
         }
       });
+
+      // 3D mobilya + duvarda küçük çerçeveli foto
+      addFurniture(aptGroup, r.id);
+      addPhotoFrame(aptGroup, r);
     });
   }
 
@@ -495,9 +662,14 @@
     if (fpsKeys['s'] || fpsKeys['arrowdown'])  mz += 1;
     if (fpsKeys['a'] || fpsKeys['arrowleft'])  mx -= 1;
     if (fpsKeys['d'] || fpsKeys['arrowright']) mx += 1;
-    if (mx === 0 && mz === 0) return;
+    // Joystick (mobil)
+    if (joyActive) {
+      mx += joyVec.x;
+      mz += joyVec.y;
+    }
+    if (Math.abs(mx) < 0.01 && Math.abs(mz) < 0.01) return;
     const len = Math.hypot(mx, mz);
-    mx /= len; mz /= len;
+    if (len > 1) { mx /= len; mz /= len; }
     // forward in world coords
     const fwdX = Math.sin(yaw), fwdZ = Math.cos(yaw);
     const rgtX = Math.cos(yaw), rgtZ = -Math.sin(yaw);
@@ -593,12 +765,20 @@
   }
   window.exitVRFPS = exitPhotoTour;
 
-  // Pointer lock + WASD setup
+  // Joystick state (mobil hareket)
+  let joyActive = false;
+  let joyVec = { x: 0, y: 0 }; // -1..1
+  let joyTouchId = null;
+  let lookTouchId = null;
+  let lookLastP = { x: 0, y: 0 };
+
+  // Pointer lock + WASD + touch setup
   function setupFpsControls() {
     const canvas = document.getElementById('vrCanvas');
-    // Click on canvas in fps mode → request pointer lock
+
+    // Desktop: tıkla → pointer lock
     canvas.addEventListener('click', () => {
-      if (mode === 'photo' && !isPointerLocked) {
+      if (mode === 'photo' && !isPointerLocked && !isTouchDevice()) {
         canvas.requestPointerLock?.();
       }
     });
@@ -623,6 +803,93 @@
     document.addEventListener('keyup', e => {
       fpsKeys[e.key.toLowerCase()] = false;
     });
+
+    // Mobil: touch joystick + bakış kontrolü
+    const joystickEl = document.getElementById('vrJoystick');
+    const joyKnob    = document.getElementById('vrJoyKnob');
+    if (joystickEl) {
+      const handleJoyStart = e => {
+        const t = e.touches ? e.touches[0] : e;
+        joyActive = true;
+        joyTouchId = e.touches ? t.identifier : 'mouse';
+        const rect = joystickEl.getBoundingClientRect();
+        joystickEl.dataset.cx = rect.left + rect.width / 2;
+        joystickEl.dataset.cy = rect.top + rect.height / 2;
+        joystickEl.dataset.r = rect.width / 2;
+        updateJoy(t.clientX, t.clientY);
+        e.preventDefault();
+      };
+      joystickEl.addEventListener('touchstart', handleJoyStart, { passive: false });
+      joystickEl.addEventListener('mousedown', handleJoyStart);
+    }
+
+    function updateJoy(x, y) {
+      const cx = +joystickEl.dataset.cx, cy = +joystickEl.dataset.cy, r = +joystickEl.dataset.r;
+      const dx = x - cx, dy = y - cy;
+      const len = Math.hypot(dx, dy);
+      const max = r * 0.85;
+      const k = len > max ? max / len : 1;
+      joyVec.x = (dx * k) / max;
+      joyVec.y = (dy * k) / max;
+      if (joyKnob) joyKnob.style.transform = `translate(${dx*k}px, ${dy*k}px)`;
+    }
+
+    document.addEventListener('touchmove', e => {
+      if (mode !== 'photo' || !fpsActive) return;
+      for (const t of e.changedTouches) {
+        if (t.identifier === joyTouchId) {
+          updateJoy(t.clientX, t.clientY);
+          e.preventDefault();
+        } else if (t.identifier === lookTouchId) {
+          const dx = t.clientX - lookLastP.x;
+          const dy = t.clientY - lookLastP.y;
+          lookLastP = { x: t.clientX, y: t.clientY };
+          yaw   -= dx * 0.005;
+          pitch -= dy * 0.005;
+          pitch = Math.max(-1.4, Math.min(1.4, pitch));
+          updateFpsLook();
+          e.preventDefault();
+        }
+      }
+    }, { passive: false });
+
+    document.addEventListener('touchstart', e => {
+      if (mode !== 'photo' || !fpsActive) return;
+      for (const t of e.changedTouches) {
+        // Joystick alanına denk düşmüyorsa look touch
+        const onJoy = joystickEl && joystickEl.contains(t.target);
+        if (onJoy) continue;
+        if (lookTouchId === null && t.target.tagName === 'CANVAS') {
+          lookTouchId = t.identifier;
+          lookLastP = { x: t.clientX, y: t.clientY };
+        }
+      }
+    }, { passive: false });
+
+    document.addEventListener('touchend', e => {
+      for (const t of e.changedTouches) {
+        if (t.identifier === joyTouchId) {
+          joyActive = false;
+          joyTouchId = null;
+          joyVec.x = 0; joyVec.y = 0;
+          if (joyKnob) joyKnob.style.transform = 'translate(0,0)';
+        }
+        if (t.identifier === lookTouchId) lookTouchId = null;
+      }
+    });
+
+    document.addEventListener('mouseup', () => {
+      if (joyTouchId === 'mouse') {
+        joyActive = false;
+        joyTouchId = null;
+        joyVec.x = 0; joyVec.y = 0;
+        if (joyKnob) joyKnob.style.transform = 'translate(0,0)';
+      }
+    });
+  }
+
+  function isTouchDevice() {
+    return ('ontouchstart' in window) || (navigator.maxTouchPoints > 0);
   }
 
   /* ─────────────────────────────────────────

@@ -2456,6 +2456,41 @@ body::before {
   box-shadow: 0 0 12px rgba(212, 168, 83, 0.55);
 }
 
+/* Mobil joystick — touch device'larda görünür */
+.vr-joystick {
+  position: absolute;
+  bottom: 28px;
+  left: 28px;
+  width: 110px;
+  height: 110px;
+  border-radius: 50%;
+  background: rgba(15, 20, 30, 0.55);
+  border: 2px solid rgba(212, 168, 83, 0.6);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 6;
+  touch-action: none;
+  pointer-events: auto;
+  user-select: none;
+  -webkit-user-select: none;
+}
+.vr-joy-knob {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: rgba(212, 168, 83, 0.9);
+  border: 2px solid rgba(255, 255, 255, 0.7);
+  box-shadow: 0 4px 16px rgba(212, 168, 83, 0.5);
+  pointer-events: none;
+}
+@media (hover: none) and (pointer: coarse), (max-width: 768px) {
+  .vr-joystick { display: flex; }
+  .vr-fps-controls { font-size: 0.6rem; padding: 6px 10px; bottom: 14px; }
+}
+
 #vrTooltip {
   position: absolute;
   display: none;
