@@ -5,8 +5,8 @@
 ;(function () {
   'use strict';
 
-  const THREE = window.TOUR;
-  const { OrbitControls, RoomEnvironment } = window.TOUR;
+  const THREE = window.THREE;
+  const OrbitControls = window.THREEOrbitControls;
 
   if (!THREE) { console.error('Three.js yüklenemedi'); return; }
 
@@ -53,8 +53,8 @@
   const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, powerPreference: 'high-performance' });
   renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
   renderer.setSize(window.innerWidth, window.innerHeight);
-  renderer.toneMapping = THREE.ACESFilmicToneMapping;
-  renderer.toneMappingExposure = 1.0;
+  renderer.toneMapping = THREE.LinearToneMapping;
+  renderer.toneMappingExposure = 1.5;
   renderer.shadowMap.enabled = true;
   renderer.shadowMap.type = THREE.PCFShadowMap;
   renderer.outputColorSpace = THREE.SRGBColorSpace;
@@ -68,8 +68,7 @@
   const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 500);
   camera.position.set(35, 25, 40);
 
-  /* ─── ENVIRONMENT (basit, çakışmayı önler) ─── */
-  // Environment map yerine daha güçlü ışık kullanıyoruz
+  /* ─── ENVIRONMENT ─── */
 
   /* ─── LIGHTS ─── */
   scene.add(new THREE.HemisphereLight(0xc0d4ee, 0x303020, 1.5));
@@ -132,55 +131,36 @@
   const BW = 12, BH = 32, BD = 10;
 
   // ── Ana bina gövdesi (4 yüze skyline fotoğrafları) ──
+  // MeshBasicMaterial + toneMapped:false = fotoğraflar orijinal parlaklıkta görünür
+  function photoMat(path) {
+    return new THREE.MeshBasicMaterial({ map: loadTex(path), toneMapped: false });
+  }
+
   // Front face
-  const frontGeo = new THREE.PlaneGeometry(BW, BH);
-  const frontMat = new THREE.MeshStandardMaterial({
-    map: loadTex(SKYLINES.front), roughness: 0.5, metalness: 0.1
-  });
-  const frontMesh = new THREE.Mesh(frontGeo, frontMat);
+  const frontMesh = new THREE.Mesh(new THREE.PlaneGeometry(BW, BH), photoMat(SKYLINES.front));
   frontMesh.position.set(0, BH / 2, BD / 2);
-  frontMesh.castShadow = true;
   buildingGroup.add(frontMesh);
 
   // Back face
-  const backGeo = new THREE.PlaneGeometry(BW, BH);
-  const backMat = new THREE.MeshStandardMaterial({
-    map: loadTex(SKYLINES.back), roughness: 0.5, metalness: 0.1
-  });
-  const backMesh = new THREE.Mesh(backGeo, backMat);
+  const backMesh = new THREE.Mesh(new THREE.PlaneGeometry(BW, BH), photoMat(SKYLINES.back));
   backMesh.position.set(0, BH / 2, -BD / 2);
   backMesh.rotation.y = Math.PI;
-  backMesh.castShadow = true;
   buildingGroup.add(backMesh);
 
   // Right face
-  const rightGeo = new THREE.PlaneGeometry(BD, BH);
-  const rightMat = new THREE.MeshStandardMaterial({
-    map: loadTex(SKYLINES.right), roughness: 0.5, metalness: 0.1
-  });
-  const rightMesh = new THREE.Mesh(rightGeo, rightMat);
+  const rightMesh = new THREE.Mesh(new THREE.PlaneGeometry(BD, BH), photoMat(SKYLINES.right));
   rightMesh.position.set(BW / 2, BH / 2, 0);
   rightMesh.rotation.y = Math.PI / 2;
-  rightMesh.castShadow = true;
   buildingGroup.add(rightMesh);
 
   // Left face
-  const leftGeo = new THREE.PlaneGeometry(BD, BH);
-  const leftMat = new THREE.MeshStandardMaterial({
-    map: loadTex(SKYLINES.left), roughness: 0.5, metalness: 0.1
-  });
-  const leftMesh = new THREE.Mesh(leftGeo, leftMat);
+  const leftMesh = new THREE.Mesh(new THREE.PlaneGeometry(BD, BH), photoMat(SKYLINES.left));
   leftMesh.position.set(-BW / 2, BH / 2, 0);
   leftMesh.rotation.y = -Math.PI / 2;
-  leftMesh.castShadow = true;
   buildingGroup.add(leftMesh);
 
   // Top face
-  const topGeo = new THREE.PlaneGeometry(BW, BD);
-  const topMat = new THREE.MeshStandardMaterial({
-    map: loadTex(SKYLINES.top), roughness: 0.4, metalness: 0.1
-  });
-  const topMesh = new THREE.Mesh(topGeo, topMat);
+  const topMesh = new THREE.Mesh(new THREE.PlaneGeometry(BW, BD), photoMat(SKYLINES.top));
   topMesh.position.set(0, BH, 0);
   topMesh.rotation.x = -Math.PI / 2;
   buildingGroup.add(topMesh);
