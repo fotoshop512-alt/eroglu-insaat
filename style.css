@@ -554,6 +554,41 @@ body::before {
   box-shadow: 0 0 40px var(--cyan-glow), inset 0 0 40px rgba(0,229,255,0.03);
 }
 
+/* 3D Sanal Tur Butonu */
+.btn-tour {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 17px 36px;
+  background: linear-gradient(135deg, rgba(201,168,76,0.15), rgba(232,201,122,0.1));
+  color: var(--gold-light);
+  border: 1px solid rgba(201,168,76,0.5);
+  border-radius: 50px;
+  font-size: 1rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-decoration: none;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  backdrop-filter: blur(10px);
+  position: relative;
+  overflow: hidden;
+}
+.btn-tour::before {
+  content: '';
+  position: absolute; inset: 0;
+  background: linear-gradient(135deg, rgba(201,168,76,0.2), transparent);
+  opacity: 0; transition: opacity 0.3s ease;
+}
+.btn-tour:hover {
+  background: linear-gradient(135deg, rgba(201,168,76,0.3), rgba(232,201,122,0.2));
+  border-color: var(--gold-light);
+  box-shadow: 0 0 30px rgba(201,168,76,0.3), 0 8px 32px rgba(0,0,0,0.3);
+  transform: translateY(-2px);
+  color: #fff;
+}
+.btn-tour:hover::before { opacity: 1; }
+
 /* Hero Stats */
 .hero-stats {
   position: absolute;

@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Eroğlu Skyline — 3D Sanal Tur</title>
+  <meta name="description" content="Eroğlu Skyline projesini 3 boyutlu olarak keşfedin. Bina dışından içine gerçekçi sanal tur.">
+  <link rel="icon" href="/favicon.ico" sizes="32x32">
+  <script src="assets/three.min.js"></script>
+  <script src="assets/three-addons.min.js"></script>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --gold: #c9a84c;
+      --gold-light: #e8c97a;
+      --dark: #080a0f;
+      --dark2: #0e1119;
+      --glass: rgba(255,255,255,0.04);
+      --glass-border: rgba(255,255,255,0.08);
+    }
+
+    html, body {
+      width: 100%; height: 100%;
+      background: var(--dark);
+      color: #fff;
+      font-family: 'Segoe UI', system-ui, sans-serif;
+      overflow: hidden;
+      user-select: none;
+    }
+
+    /* ── LOADING SCREEN ── */
+    #loadScreen {
+      position: fixed; inset: 0; z-index: 9999;
+      background: var(--dark);
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      gap: 28px;
+      transition: opacity 0.8s ease, visibility 0.8s ease;
+    }
+    #loadScreen.hidden { opacity: 0; visibility: hidden; }
+
+    .load-logo {
+      font-size: clamp(28px, 5vw, 48px);
+      font-weight: 800;
+      letter-spacing: 0.2em;
+      background: linear-gradient(135deg, var(--gold-light), var(--gold));
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    }
+    .load-sub {
+      font-size: 13px; letter-spacing: 0.3em; color: rgba(255,255,255,0.4);
+      text-transform: uppercase;
+    }
+    .load-bar-track {
+      width: 260px; height: 2px;
+      background: rgba(255,255,255,0.1);
+      border-radius: 2px; overflow: hidden;
+    }
+    .load-bar {
+      height: 100%; width: 0%;
+      background: linear-gradient(90deg, var(--gold), var(--gold-light));
+      border-radius: 2px;
+      transition: width 0.3s ease;
+    }
+    .load-pct { font-size: 12px; color: var(--gold); letter-spacing: 0.15em; }
+
+    /* ── CANVAS ── */
+    #tourCanvas {
+      position: fixed; inset: 0;
+      width: 100% !important; height: 100% !important;
+      display: block;
+    }
+
+    /* ── TOP BAR ── */
+    .top-bar {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 18px 32px;
+      background: linear-gradient(to bottom, rgba(8,10,15,0.95) 0%, transparent 100%);
+      pointer-events: none;
+    }
+    .top-logo {
+      display: flex; align-items: center; gap: 12px;
+      pointer-events: all;
+      text-decoration: none;
+      color: #fff;
+    }
+    .top-logo-icon {
+      width: 36px; height: 36px;
+      background: linear-gradient(135deg, var(--gold), var(--gold-light));
+      border-radius: 8px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 16px;
+    }
+    .top-logo-text { font-size: 15px; font-weight: 700; letter-spacing: 0.1em; }
+    .top-logo-sub { font-size: 10px; color: rgba(255,255,255,0.5); letter-spacing: 0.15em; }
+
+    .top-title {
+      position: absolute; left: 50%; transform: translateX(-50%);
+      text-align: center; pointer-events: none;
+    }
+    .top-title h1 {
+      font-size: clamp(13px, 2vw, 17px);
+      font-weight: 600; letter-spacing: 0.15em;
+      color: rgba(255,255,255,0.9);
+      text-transform: uppercase;
+    }
+    .top-title p { font-size: 11px; color: var(--gold); letter-spacing: 0.2em; }
+
+    .top-back {
+      pointer-events: all;
+      display: flex; align-items: center; gap: 8px;
+      background: var(--glass); border: 1px solid var(--glass-border);
+      color: rgba(255,255,255,0.7); font-size: 13px;
+      padding: 8px 16px; border-radius: 20px;
+      cursor: pointer; text-decoration: none;
+      transition: all 0.2s ease;
+      backdrop-filter: blur(10px);
+    }
+    .top-back:hover { background: rgba(201,168,76,0.15); color: var(--gold); border-color: var(--gold); }
+
+    /* ── ROOM PANEL (RIGHT) ── */
+    .room-panel {
+      position: fixed; right: 24px; top: 50%; transform: translateY(-50%);
+      z-index: 100;
+      display: flex; flex-direction: column; gap: 8px;
+      opacity: 0; transition: opacity 0.5s ease;
+    }
+    .room-panel.visible { opacity: 1; }
+    .room-panel-title {
+      font-size: 9px; letter-spacing: 0.3em; color: rgba(255,255,255,0.4);
+      text-align: center; margin-bottom: 4px; text-transform: uppercase;
+    }
+    .room-btn {
+      display: flex; align-items: center; gap: 10px;
+      background: var(--glass); border: 1px solid var(--glass-border);
+      color: rgba(255,255,255,0.7); font-size: 12px; font-weight: 500;
+      padding: 10px 16px; border-radius: 8px;
+      cursor: pointer; transition: all 0.2s ease;
+      backdrop-filter: blur(12px);
+      white-space: nowrap;
+    }
+    .room-btn:hover { background: rgba(201,168,76,0.15); color: var(--gold); border-color: rgba(201,168,76,0.4); transform: translateX(-4px); }
+    .room-btn.active { background: rgba(201,168,76,0.2); color: var(--gold-light); border-color: var(--gold); }
+    .room-btn-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--gold); flex-shrink: 0; }
+
+    /* ── BOTTOM BAR ── */
+    .bottom-bar {
+      position: fixed; bottom: 0; left: 0; right: 0; z-index: 100;
+      display: flex; align-items: center; justify-content: center; gap: 32px;
+      padding: 18px 32px;
+      background: linear-gradient(to top, rgba(8,10,15,0.9) 0%, transparent 100%);
+    }
+    .hint-item {
+      display: flex; align-items: center; gap: 8px;
+      font-size: 11px; color: rgba(255,255,255,0.35); letter-spacing: 0.05em;
+    }
+    .hint-key {
+      background: rgba(255,255,255,0.07); border: 1px solid rgba(255,255,255,0.1);
+      padding: 2px 8px; border-radius: 4px; font-size: 10px;
+      color: rgba(255,255,255,0.5);
+    }
+
+    /* ── VIEW MODE TOGGLE ── */
+    .view-toggle {
+      position: fixed; bottom: 60px; left: 50%; transform: translateX(-50%);
+      z-index: 100;
+      display: flex; gap: 0;
+      background: rgba(8,10,15,0.8); border: 1px solid var(--glass-border);
+      border-radius: 30px; padding: 4px;
+      backdrop-filter: blur(16px);
+    }
+    .view-btn {
+      padding: 8px 20px; border-radius: 24px;
+      font-size: 12px; font-weight: 600; letter-spacing: 0.05em;
+      cursor: pointer; transition: all 0.25s ease; color: rgba(255,255,255,0.5);
+      border: none; background: transparent;
+    }
+    .view-btn.active { background: linear-gradient(135deg, var(--gold), var(--gold-light)); color: #000; }
+
+    /* ── INTERIOR OVERLAY ── */
+    #interiorOverlay {
+      position: fixed; inset: 0; z-index: 200;
+      background: var(--dark);
+      display: none; flex-direction: column;
+    }
+    #interiorOverlay.visible { display: flex; }
+
+    .interior-header {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 20px 32px;
+      background: linear-gradient(to bottom, rgba(8,10,15,1) 0%, transparent 100%);
+      position: absolute; top: 0; left: 0; right: 0; z-index: 10;
+    }
+    .interior-room-name {
+      font-size: clamp(16px, 3vw, 24px); font-weight: 700; letter-spacing: 0.1em;
+      background: linear-gradient(135deg, #fff, var(--gold-light));
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    }
+    .interior-close {
+      background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.15);
+      color: #fff; padding: 8px 20px; border-radius: 20px;
+      cursor: pointer; font-size: 13px; transition: all 0.2s;
+    }
+    .interior-close:hover { background: rgba(201,168,76,0.2); color: var(--gold); border-color: var(--gold); }
+
+    #interiorCanvas {
+      width: 100% !important; height: 100% !important;
+      display: block; cursor: grab;
+    }
+    #interiorCanvas:active { cursor: grabbing; }
+
+    .interior-nav {
+      position: absolute; bottom: 24px; left: 50%; transform: translateX(-50%);
+      display: flex; gap: 8px; z-index: 10;
+    }
+    .int-nav-btn {
+      display: flex; align-items: center; gap: 8px;
+      background: rgba(8,10,15,0.85); border: 1px solid rgba(255,255,255,0.1);
+      color: rgba(255,255,255,0.7); font-size: 11px; font-weight: 500;
+      padding: 8px 16px; border-radius: 20px; cursor: pointer;
+      transition: all 0.2s; backdrop-filter: blur(12px);
+    }
+    .int-nav-btn:hover { border-color: var(--gold); color: var(--gold); }
+    .int-nav-btn.active { background: rgba(201,168,76,0.2); color: var(--gold-light); border-color: var(--gold); }
+
+    /* ── TOOLTIPS / FADE-IN ── */
+    .fade-in { animation: fadeIn 0.6s ease forwards; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
+
+    /* ── COMPASS ── */
+    .compass {
+      position: fixed; bottom: 80px; right: 24px; z-index: 100;
+      width: 52px; height: 52px;
+      background: rgba(8,10,15,0.8); border: 1px solid var(--glass-border);
+      border-radius: 50%; backdrop-filter: blur(12px);
+      display: flex; align-items: center; justify-content: center;
+    }
+    .compass svg { transition: transform 0.3s ease; }
+
+    /* ── MOBILE ── */
+    @media (max-width: 768px) {
+      .room-panel { right: 8px; }
+      .room-btn { padding: 8px 10px; font-size: 11px; }
+      .bottom-bar { gap: 16px; flex-wrap: wrap; }
+      .hint-item { font-size: 10px; }
+      .top-title h1 { font-size: 11px; }
+      .top-bar { padding: 12px 16px; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- LOADING SCREEN -->
+<div id="loadScreen">
+  <div class="load-logo">EROĞLU</div>
+  <div class="load-sub">3D Sanal Tur Yükleniyor</div>
+  <div class="load-bar-track"><div class="load-bar" id="loadBar"></div></div>
+  <div class="load-pct" id="loadPct">0%</div>
+</div>
+
+<!-- TOP BAR -->
+<div class="top-bar">
+  <a href="index.html" class="top-logo">
+    <div class="top-logo-icon">🏗</div>
+    <div>
+      <div class="top-logo-text">EROĞLU</div>
+      <div class="top-logo-sub">İnşaat & Mimarlık</div>
+    </div>
+  </a>
+  <div class="top-title">
+    <h1>Akhisar Projesi</h1>
+    <p>3D Sanal Tur</p>
+  </div>
+  <a href="index.html" class="top-back">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
+    Anasayfa
+  </a>
+</div>
+
+<!-- MAIN 3D CANVAS -->
+<canvas id="tourCanvas"></canvas>
+
+<!-- COMPASS -->
+<div class="compass">
+  <svg id="compassNeedle" width="28" height="28" viewBox="0 0 28 28">
+    <polygon points="14,2 17,14 14,12 11,14" fill="#e8c97a"/>
+    <polygon points="14,26 17,14 14,16 11,14" fill="rgba(255,255,255,0.25)"/>
+  </svg>
+</div>
+
+<!-- ROOM PANEL -->
+<div class="room-panel" id="roomPanel">
+  <div class="room-panel-title">İç Mekanlar</div>
+  <div class="room-btn" onclick="openRoom('salon')"><div class="room-btn-dot"></div>Salon</div>
+  <div class="room-btn" onclick="openRoom('oturma')"><div class="room-btn-dot"></div>Oturma Odası</div>
+  <div class="room-btn" onclick="openRoom('mutfak')"><div class="room-btn-dot"></div>Mutfak</div>
+  <div class="room-btn" onclick="openRoom('yatak')"><div class="room-btn-dot"></div>Yatak Odası</div>
+  <div class="room-btn" onclick="openRoom('cocuk')"><div class="room-btn-dot"></div>Çocuk Odası</div>
+  <div class="room-btn" onclick="openRoom('banyo')"><div class="room-btn-dot"></div>Banyo</div>
+  <div class="room-btn" onclick="openRoom('balkon')"><div class="room-btn-dot"></div>Balkon</div>
+</div>
+
+<!-- BOTTOM HINTS -->
+<div class="bottom-bar">
+  <div class="hint-item"><span class="hint-key">Sol Tık</span> Döndür</div>
+  <div class="hint-item"><span class="hint-key">Sağ Tık</span> Kaydır</div>
+  <div class="hint-item"><span class="hint-key">Scroll</span> Yakınlaştır</div>
+  <div class="hint-item"><span class="hint-key">Sağ Panel</span> Odalar</div>
+</div>
+
+<!-- INTERIOR 360° OVERLAY -->
+<div id="interiorOverlay">
+  <div class="interior-header">
+    <div class="interior-room-name" id="interiorRoomName">Salon</div>
+    <button class="interior-close" onclick="closeRoom()">✕ Kapat</button>
+  </div>
+  <canvas id="interiorCanvas"></canvas>
+  <div class="interior-nav" id="interiorNav">
+    <!-- filled by JS -->
+  </div>
+</div>
+
+<script src="sanal-tur.js"></script>
+</body>
+</html>
