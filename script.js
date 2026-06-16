@@ -628,4 +628,42 @@ document.addEventListener('DOMContentLoaded', () => {
     if (e.key === 'ArrowRight') nextImage();
     if (e.key === 'ArrowLeft') prevImage();
   });
+
+  // ─── Dokunmatik kaydırma (swipe) — telefon/tablet ───
+  let touchStartX = 0, touchStartY = 0, touchActive = false;
+  lightbox.addEventListener('touchstart', (e) => {
+    if (!lightbox.classList.contains('active')) return;
+    const t = e.changedTouches[0];
+    touchStartX = t.clientX; touchStartY = t.clientY; touchActive = true;
+  }, { passive: true });
+  lightbox.addEventListener('touchend', (e) => {
+    if (!touchActive) return;
+    touchActive = false;
+    const t = e.changedTouches[0];
+    const dx = t.clientX - touchStartX;
+    const dy = t.clientY - touchStartY;
+    if (Math.abs(dx) > 45 && Math.abs(dx) > Math.abs(dy)) {
+      if (dx < 0) nextImage(); else prevImage();
+    }
+  }, { passive: true });
+
+  // ─── Fare ile sürükleyerek kaydırma — masaüstü ───
+  let dragStartX = null;
+  lightboxImg.addEventListener('mousedown', (e) => { e.preventDefault(); dragStartX = e.clientX; });
+  window.addEventListener('mouseup', (e) => {
+    if (dragStartX === null) return;
+    const dx = e.clientX - dragStartX; dragStartX = null;
+    if (Math.abs(dx) > 45) { if (dx < 0) nextImage(); else prevImage(); }
+  });
+
+  // ─── Fare tekerleği ile kaydırma — masaüstü ───
+  let wheelLock = false;
+  lightbox.addEventListener('wheel', (e) => {
+    if (!lightbox.classList.contains('active')) return;
+    e.preventDefault();
+    if (wheelLock) return;
+    wheelLock = true;
+    if (e.deltaY > 0 || e.deltaX > 0) nextImage(); else prevImage();
+    setTimeout(() => { wheelLock = false; }, 350);
+  }, { passive: false });
 });
