@@ -605,10 +605,13 @@ document.addEventListener('DOMContentLoaded', () => {
     updateLightboxContent();
   }
 
-  // Tıklama olaylarını ata
+  // Tıklama olaylarını ata — üstteki .project-overlay katmanı tıklamayı yakaladığı
+  // için img yerine kartın tamamına bağlanır (kartın her yerine tıklanabilir)
   galleryImages.forEach((img, index) => {
     img.style.cursor = 'zoom-in';
-    img.addEventListener('click', () => openLightbox(index));
+    const card = img.closest('.project-card, .interior-card') || img;
+    card.style.cursor = 'zoom-in';
+    card.addEventListener('click', () => openLightbox(index));
   });
 
   // Kontrol butonları olayları
